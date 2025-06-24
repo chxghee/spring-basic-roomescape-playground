@@ -71,7 +71,7 @@ public class MissionStepTest {
 
         assertSoftly(soft -> {
             soft.assertThat(response.statusCode()).isEqualTo(201);
-            soft.assertThat(response.as(ReservationResponse.class).getName()).isEqualTo("어드민");
+            soft.assertThat(response.as(ReservationResponse.class).name()).isEqualTo("어드민");
         });
 
         params.put("name", "브라운");
@@ -86,7 +86,7 @@ public class MissionStepTest {
 
         assertSoftly(soft -> {
             soft.assertThat(response.statusCode()).isEqualTo(201);
-            soft.assertThat(adminResponse.as(ReservationResponse.class).getName()).isEqualTo("브라운");
+            soft.assertThat(adminResponse.as(ReservationResponse.class).name()).isEqualTo("브라운");
         });
     }
 

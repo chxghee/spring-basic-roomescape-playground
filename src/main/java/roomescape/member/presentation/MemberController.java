@@ -32,7 +32,7 @@ public class MemberController {
     @PostMapping("/members")
     public ResponseEntity<MemberResponse> createMember(@RequestBody MemberRequest memberRequest) {
         MemberResponse member = memberService.createMember(memberRequest);
-        return ResponseEntity.created(URI.create("/members/" + member.getId())).body(member);
+        return ResponseEntity.created(URI.create("/members/" + member.id())).body(member);
     }
 
     @PostMapping("/logout")
