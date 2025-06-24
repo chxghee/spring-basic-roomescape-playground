@@ -55,5 +55,13 @@
 
 1. Interceptor 구현    
    ➡️ `AdminAuthInterceptor`: 관리자 요청의 경우 해당 인터셉터에서 권한 검증      
-   
+
+
+2. 어드민만 요청해야 하는 API의 권한 체크  
+  ➡️ `Webconfig`의 `addInterceptors`에 설정할 수 있는 uri는 http method 구분 없이 설정된다  
+  ➡️ `/times/**`, `/themes/**`에 대해 get 요청은 모두 가능하지만 post, delete는 어드민만 가능한 상황    
+  ➡️ 인터셉터 내부에 화이트 리스트를 두어 해당 리스트에 존재하는 조회 요청은 인터셉터를 pass 하도록 구현  
+
+
+
 <br>

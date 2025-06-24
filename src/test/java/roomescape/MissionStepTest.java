@@ -98,7 +98,7 @@ public class MissionStepTest {
                 .cookie("token", brownToken)
                 .get("/admin")
                 .then().log().all()
-                .statusCode(403);
+                .statusCode(401);
 
         String adminToken = createToken("admin@email.com", "password");
 
