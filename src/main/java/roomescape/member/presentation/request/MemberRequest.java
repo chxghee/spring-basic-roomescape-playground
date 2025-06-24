@@ -1,4 +1,4 @@
-package roomescape.member.presentation;
+package roomescape.member.presentation.request;
 
 public class MemberRequest {
     private String name;

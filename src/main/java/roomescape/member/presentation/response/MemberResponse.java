@@ -1,4 +1,4 @@
-package roomescape.member.presentation;
+package roomescape.member.presentation.response;
 
 public class MemberResponse {
     private Long id;
