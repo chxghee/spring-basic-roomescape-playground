@@ -1,10 +1,12 @@
 package roomescape.auth;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.member.Member;
+import roomescape.member.Role;
 
 import java.util.Date;
 
@@ -34,5 +36,32 @@ public class JwtTokenProvider {
                 .setExpiration(expirationTime)
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .compact();
+    }
+
+    public String getLoginMemberName(String accessToken) {
+        return getClaims(accessToken)
+                .get("name").toString();
+    }
+
+    public Role getLoginMemberRole(String accessToken) {
+        return Role.from(
+                getClaims(accessToken)
+                        .get("role").toString()
+        );
+    }
+
+    public Long getLoginMemberId(String accessToken) {
+        return Long.valueOf(
+                getClaims(accessToken)
+                        .getSubject()
+        );
+    }
+
+    private Claims getClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 }

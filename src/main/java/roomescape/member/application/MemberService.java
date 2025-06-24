@@ -9,6 +9,7 @@ import roomescape.member.MemberException;
 import roomescape.member.Role;
 import roomescape.member.presentation.request.LoginRequest;
 import roomescape.member.presentation.request.MemberRequest;
+import roomescape.member.presentation.response.LoginMemberResponse;
 import roomescape.member.presentation.response.MemberResponse;
 
 @Service
@@ -38,5 +39,10 @@ public class MemberService {
             throw new ApplicationException(MemberException.LOGIN_FAILED);
         }
         return findMember;
+    }
+
+    public LoginMemberResponse checkLoginMember(String accessToken) {
+        String loginMemberName = jwtTokenProvider.getLoginMemberName(accessToken);
+        return new LoginMemberResponse(loginMemberName);
     }
 }

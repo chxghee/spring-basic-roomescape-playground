@@ -6,7 +6,8 @@ import roomescape.exception.ExceptionCode;
 public enum MemberException implements ExceptionCode {
 
     LOGIN_FAILED(HttpStatus.UNAUTHORIZED, "로그인 실패", "아이디와 비밀번호가 일치하지 않습니다."),
-    INVALID_ROLE(HttpStatus.BAD_REQUEST, "존재하지 않는 role", "존재하지 않는 role값 입니다.")
+    INVALID_ROLE(HttpStatus.BAD_REQUEST, "존재하지 않는 role", "존재하지 않는 role값 입니다."),
+    ACCESS_TOKEN_NOT_FOUND(HttpStatus.BAD_REQUEST, "access token 없음", "access token이 쿠키에 존재하지 않습니다.")
     ;
 
     private HttpStatus httpStatus;
