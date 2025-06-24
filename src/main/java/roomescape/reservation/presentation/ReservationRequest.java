@@ -1,24 +1,39 @@
 package roomescape.reservation.presentation;
 
-public class ReservationRequest {
-    private String name;
-    private String date;
-    private Long theme;
-    private Long time;
+import roomescape.auth.LoginMember;
+import roomescape.exception.ApplicationException;
+import roomescape.reservation.ReservationException;
+import roomescape.reservation.application.ReservationCommand;
 
-    public String getName() {
-        return name;
+public record ReservationRequest(
+        String date,
+        String name,
+        Long theme,
+        Long time
+) {
+
+    public ReservationCommand toCommand(LoginMember loginMember) {
+        validateRequest();
+        String reservationMember = getReservationMember(loginMember);
+        return new ReservationCommand(
+                date,
+                reservationMember,
+                theme,
+                time
+        );
     }
 
-    public String getDate() {
-        return date;
+    private void validateRequest() {
+        if (date == null || theme == null || time == null) {
+            throw new ApplicationException(ReservationException.INVALID_REQUEST);
+        }
     }
 
-    public Long getTheme() {
-        return theme;
-    }
-
-    public Long getTime() {
-        return time;
+    private String getReservationMember(LoginMember loginMember) {
+        String reservationMember = loginMember.name();
+        if (name != null) {
+            reservationMember = name;
+        }
+        return reservationMember;
     }
 }

@@ -1,10 +1,10 @@
 package roomescape.auth;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import roomescape.exception.ApplicationException;
 import roomescape.member.Member;
 import roomescape.member.Role;
 
@@ -38,6 +38,14 @@ public class JwtTokenProvider {
                 .compact();
     }
 
+    public LoginMember getLoginMember(String accessToken) {
+        return new LoginMember(
+                getLoginMemberId(accessToken),
+                getLoginMemberName(accessToken),
+                getLoginMemberRole(accessToken)
+        );
+    }
+
     public String getLoginMemberName(String accessToken) {
         return getClaims(accessToken)
                 .get("name").toString();
@@ -58,10 +66,18 @@ public class JwtTokenProvider {
     }
 
     private Claims getClaims(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+        try {
+            return Jwts.parserBuilder()
+                    .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (ExpiredJwtException e) {
+            throw new ApplicationException(AuthException.ACCESS_TOKEN_EXPIRED);
+        } catch (IllegalArgumentException e) {
+            throw new ApplicationException(AuthException.ACCESS_TOKEN_NOT_FOUND);
+        } catch (JwtException e) {
+            throw new ApplicationException(AuthException.INVALID_ACCESS_TOKEN);
+        }
     }
 }

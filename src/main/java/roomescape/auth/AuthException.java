@@ -1,19 +1,20 @@
-package roomescape.member;
+package roomescape.auth;
 
 import org.springframework.http.HttpStatus;
 import roomescape.exception.ExceptionCode;
 
-public enum MemberException implements ExceptionCode {
+public enum AuthException implements ExceptionCode {
 
-    LOGIN_FAILED(HttpStatus.UNAUTHORIZED, "로그인 실패", "아이디와 비밀번호가 일치하지 않습니다."),
-    INVALID_ROLE(HttpStatus.BAD_REQUEST, "존재하지 않는 role", "존재하지 않는 role값 입니다."),
+    ACCESS_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "access token 만료", "access token 만료되었습니다."),
+    INVALID_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, "access token 형식 오류", "access token이 유효하지 않습니다."),
+    ACCESS_TOKEN_NOT_FOUND(HttpStatus.BAD_REQUEST, "access token 없음", "access token이 쿠키에 존재하지 않습니다.")
     ;
 
     private HttpStatus httpStatus;
     private String title;
     private String detail;
 
-    MemberException(HttpStatus httpStatus, String title, String detail) {
+    AuthException(HttpStatus httpStatus, String title, String detail) {
         this.httpStatus = httpStatus;
         this.title = title;
         this.detail = detail;

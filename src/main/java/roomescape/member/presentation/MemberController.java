@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.common.CookieUtil;
 import roomescape.exception.ApplicationException;
 import roomescape.member.MemberException;
 import roomescape.member.application.MemberService;
@@ -39,42 +40,22 @@ public class MemberController {
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletResponse response) {
-        setCookieToken("", 0, response);
+        CookieUtil.setToken("", 0, response);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
         String accessToken = memberService.loginMember(loginRequest);
-        setCookieToken(accessToken, accessTokenExpirationSeconds, response);
+        CookieUtil.setToken(accessToken, accessTokenExpirationSeconds, response);
         return ResponseEntity.ok().build();
-    }
-
-    private void setCookieToken(String accessToken, int cookieExpirationSeconds, HttpServletResponse response) {
-        Cookie cookie = new Cookie("token", accessToken);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        cookie.setMaxAge(cookieExpirationSeconds);
-        response.addCookie(cookie);
     }
 
     @GetMapping("/login/check")
     public ResponseEntity<LoginMemberResponse> checkLogin(HttpServletRequest request, HttpServletResponse response) {
-        String accessToken = extractTokenFromCookie(request.getCookies());
+        String accessToken = CookieUtil.extractToken(request.getCookies());
         return ResponseEntity.ok(memberService.checkLoginMember(accessToken));
 
-    }
-
-    private String extractTokenFromCookie(Cookie[] cookies) {
-        if (cookies == null) {
-            throw new ApplicationException(MemberException.ACCESS_TOKEN_NOT_FOUND);
-        }
-        for (Cookie cookie : cookies) {
-            if ("token".equals(cookie.getName())) {
-                return cookie.getValue();
-            }
-        }
-        throw new ApplicationException(MemberException.ACCESS_TOKEN_NOT_FOUND);
     }
 
 }

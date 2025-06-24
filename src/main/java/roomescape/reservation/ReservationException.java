@@ -1,19 +1,19 @@
-package roomescape.member;
+package roomescape.reservation;
 
 import org.springframework.http.HttpStatus;
 import roomescape.exception.ExceptionCode;
 
-public enum MemberException implements ExceptionCode {
+public enum ReservationException implements ExceptionCode {
 
-    LOGIN_FAILED(HttpStatus.UNAUTHORIZED, "로그인 실패", "아이디와 비밀번호가 일치하지 않습니다."),
-    INVALID_ROLE(HttpStatus.BAD_REQUEST, "존재하지 않는 role", "존재하지 않는 role값 입니다."),
+    INVALID_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 예약 요청", "날짜, 테마, 시간은 필수 입력값 입니다."),
+    INVALID_ADMIN_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 예약 요청", "관리자 예약 시 name은 필수 입력값 입니다.")
     ;
 
     private HttpStatus httpStatus;
     private String title;
     private String detail;
 
-    MemberException(HttpStatus httpStatus, String title, String detail) {
+    ReservationException(HttpStatus httpStatus, String title, String detail) {
         this.httpStatus = httpStatus;
         this.title = title;
         this.detail = detail;
