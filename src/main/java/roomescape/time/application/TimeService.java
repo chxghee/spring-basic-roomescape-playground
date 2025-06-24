@@ -1,8 +1,11 @@
-package roomescape.time;
+package roomescape.time.application;
 
 import org.springframework.stereotype.Service;
 import roomescape.reservation.Reservation;
 import roomescape.reservation.ReservationDao;
+import roomescape.time.presentation.AvailableTime;
+import roomescape.time.Time;
+import roomescape.time.TimeDao;
 
 import java.util.List;
 
