@@ -1,4 +1,4 @@
-package roomescape.reservation.presentation;
+package roomescape.reservation.presentation.response;
 
 public class ReservationResponse {
     private Long id;

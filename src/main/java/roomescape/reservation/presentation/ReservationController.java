@@ -8,8 +8,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.LoginMember;
-import roomescape.member.Role;
 import roomescape.reservation.application.ReservationService;
+import roomescape.reservation.presentation.request.ReservationRequest;
+import roomescape.reservation.presentation.response.ReservationResponse;
 
 import java.net.URI;
 import java.util.List;

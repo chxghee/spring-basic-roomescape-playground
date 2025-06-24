@@ -1,8 +1,8 @@
-package roomescape.reservation.presentation;
+package roomescape.reservation.presentation.request;
 
 import roomescape.auth.LoginMember;
 import roomescape.exception.ApplicationException;
-import roomescape.reservation.ReservationException;
+import roomescape.reservation.exception.ReservationException;
 import roomescape.reservation.application.ReservationCommand;
 
 public record ReservationRequest(

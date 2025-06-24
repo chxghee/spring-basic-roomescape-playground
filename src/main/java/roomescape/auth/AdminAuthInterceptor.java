@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.common.CookieUtil;
 import roomescape.exception.ApplicationException;
-import roomescape.member.Role;
+import roomescape.member.domain.Role;
 
 @Component
 public class AdminAuthInterceptor implements HandlerInterceptor {

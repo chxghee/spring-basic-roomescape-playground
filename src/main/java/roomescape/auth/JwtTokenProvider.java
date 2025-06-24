@@ -5,8 +5,8 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.exception.ApplicationException;
-import roomescape.member.Member;
-import roomescape.member.Role;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 
 import java.util.Date;
 
@@ -75,7 +75,7 @@ public class JwtTokenProvider {
         } catch (ExpiredJwtException e) {
             throw new ApplicationException(AuthException.ACCESS_TOKEN_EXPIRED);
         } catch (IllegalArgumentException e) {
-            throw new ApplicationException(AuthException.ACCESS_TOKEN_NOT_FOUND);
+            throw new ApplicationException(AuthException.UNAUTHENTICATED_REQUEST);
         } catch (JwtException e) {
             throw new ApplicationException(AuthException.INVALID_ACCESS_TOKEN);
         }

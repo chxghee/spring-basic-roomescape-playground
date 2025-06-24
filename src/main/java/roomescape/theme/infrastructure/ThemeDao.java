@@ -1,9 +1,10 @@
-package roomescape.theme;
+package roomescape.theme.infrastructure;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.theme.domain.Theme;
 
 import java.util.List;
 

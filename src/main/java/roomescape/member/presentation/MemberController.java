@@ -1,6 +1,5 @@
 package roomescape.member.presentation;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,8 +9,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.common.CookieUtil;
-import roomescape.exception.ApplicationException;
-import roomescape.member.MemberException;
 import roomescape.member.application.MemberService;
 import roomescape.member.presentation.request.LoginRequest;
 import roomescape.member.presentation.request.MemberRequest;

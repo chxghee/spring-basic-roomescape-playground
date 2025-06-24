@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.theme.Theme;
-import roomescape.theme.ThemeDao;
+import roomescape.theme.domain.Theme;
+import roomescape.theme.infrastructure.ThemeDao;
 
 import java.net.URI;
 import java.util.List;

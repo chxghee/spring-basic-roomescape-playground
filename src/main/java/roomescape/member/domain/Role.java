@@ -1,6 +1,7 @@
-package roomescape.member;
+package roomescape.member.domain;
 
 import roomescape.exception.ApplicationException;
+import roomescape.member.exception.MemberException;
 
 import java.util.Arrays;
 

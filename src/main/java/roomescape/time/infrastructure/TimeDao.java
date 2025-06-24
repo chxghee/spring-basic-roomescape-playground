@@ -1,9 +1,10 @@
-package roomescape.time;
+package roomescape.time.infrastructure;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.time.domain.Time;
 
 import java.sql.PreparedStatement;
 import java.util.List;
