@@ -2,11 +2,9 @@ package roomescape.common;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.stereotype.Component;
 import roomescape.auth.AuthException;
 import roomescape.exception.ApplicationException;
 
-@Component
 public class CookieUtil {
 
     public static void setToken(String accessToken, int cookieExpirationSeconds, HttpServletResponse response) {

@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.auth.JwtTokenProvider;
+import roomescape.auth.LoginMember;
 import roomescape.common.CookieUtil;
 import roomescape.member.application.MemberService;
 import roomescape.member.presentation.request.LoginRequest;
@@ -21,11 +23,14 @@ import java.net.URI;
 public class MemberController {
 
     private final MemberService memberService;
+    private final JwtTokenProvider jwtTokenProvider;
     private final int accessTokenExpirationSeconds;
 
     public MemberController(MemberService memberService,
+                            JwtTokenProvider jwtTokenProvider,
                             @Value("${roomescape.auth.jwt.expiration}")int accessTokenExpiration) {
         this.memberService = memberService;
+        this.jwtTokenProvider = jwtTokenProvider;
         this.accessTokenExpirationSeconds = accessTokenExpiration / 1000;
     }
 
@@ -43,7 +48,7 @@ public class MemberController {
 
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
-        String accessToken = memberService.loginMember(loginRequest);
+        String accessToken = jwtTokenProvider.createAccessToken(memberService.loginMember(loginRequest));
         CookieUtil.setToken(accessToken, accessTokenExpirationSeconds, response);
         return ResponseEntity.ok().build();
     }
@@ -51,8 +56,8 @@ public class MemberController {
     @GetMapping("/login/check")
     public ResponseEntity<LoginMemberResponse> checkLogin(HttpServletRequest request, HttpServletResponse response) {
         String accessToken = CookieUtil.extractToken(request.getCookies());
-        return ResponseEntity.ok(memberService.checkLoginMember(accessToken));
-
+        LoginMember loginMember = jwtTokenProvider.getLoginMember(accessToken);
+        return ResponseEntity.ok(new LoginMemberResponse(loginMember.name()));
     }
 
 }

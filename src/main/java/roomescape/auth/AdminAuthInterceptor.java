@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.common.CookieUtil;
 import roomescape.exception.ApplicationException;
-import roomescape.member.domain.Role;
 
 import java.util.Map;
 import java.util.Set;

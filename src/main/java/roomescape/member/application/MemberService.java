@@ -2,7 +2,6 @@ package roomescape.member.application;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
-import roomescape.auth.JwtTokenProvider;
 import roomescape.exception.ApplicationException;
 import roomescape.member.domain.Member;
 import roomescape.member.infrastructure.MemberDao;
@@ -10,18 +9,15 @@ import roomescape.member.exception.MemberException;
 import roomescape.member.domain.Role;
 import roomescape.member.presentation.request.LoginRequest;
 import roomescape.member.presentation.request.MemberRequest;
-import roomescape.member.presentation.response.LoginMemberResponse;
 import roomescape.member.presentation.response.MemberResponse;
 
 @Service
 public class MemberService {
 
     private final MemberDao memberDao;
-    private final JwtTokenProvider jwtTokenProvider;
 
-    public MemberService(MemberDao memberDao, JwtTokenProvider jwtTokenProvider) {
+    public MemberService(MemberDao memberDao) {
         this.memberDao = memberDao;
-        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     public MemberResponse createMember(MemberRequest memberRequest) {
@@ -29,9 +25,8 @@ public class MemberService {
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 
-    public String loginMember(LoginRequest loginRequest) {
-        Member loginMember = getMemberByLoginRequest(loginRequest);
-        return jwtTokenProvider.createAccessToken(loginMember);
+    public Member loginMember(LoginRequest loginRequest) {
+        return getMemberByLoginRequest(loginRequest);
     }
 
     private Member getMemberByLoginRequest(LoginRequest loginRequest) {
@@ -40,10 +35,5 @@ public class MemberService {
         } catch (EmptyResultDataAccessException e) {
             throw new ApplicationException(MemberException.LOGIN_FAILED);
         }
-    }
-
-    public LoginMemberResponse checkLoginMember(String accessToken) {
-        String loginMemberName = jwtTokenProvider.getLoginMemberName(accessToken);
-        return new LoginMemberResponse(loginMemberName);
     }
 }
