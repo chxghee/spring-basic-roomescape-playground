@@ -8,18 +8,18 @@ import roomescape.common.CookieUtil;
 import roomescape.exception.ApplicationException;
 import roomescape.member.domain.Role;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 @Component
 public class AdminAuthInterceptor implements HandlerInterceptor {
 
-    private final JwtTokenProvider jwtTokenProvider;
     private static final Map<String, Set<String>> WHITE_LIST = Map.of(
             "/times", Set.of("GET"),
             "/themes", Set.of("GET")
     );
+    private final JwtTokenProvider jwtTokenProvider;
+
 
     public AdminAuthInterceptor(JwtTokenProvider jwtTokenProvider) {
         this.jwtTokenProvider = jwtTokenProvider;
@@ -34,7 +34,7 @@ public class AdminAuthInterceptor implements HandlerInterceptor {
 
         String accessToken = CookieUtil.extractToken(request.getCookies());
         LoginMember loginMember = jwtTokenProvider.getLoginMember(accessToken);
-        if (Role.ADMIN.equals(loginMember.role())) {
+        if (loginMember.isAdmin()) {
             return true;
         }
         throw new ApplicationException(AuthException.FORBIDDEN_ADMIN_ACCESS);

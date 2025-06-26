@@ -19,7 +19,7 @@ class JwtTokenProviderTest {
 
     @Test
     void 토큰이_생성되면_id_name_role_정보가_포합되어야_한다() {
-        JwtTokenProvider jwtTokenProvider = new JwtTokenProvider(SECRET_KEY, EXPIRATION);
+        JwtTokenProvider jwtTokenProvider = new JwtTokenProvider(new JwtProperties(SECRET_KEY, EXPIRATION));
         String accessToken = jwtTokenProvider.createAccessToken(member);
 
         LoginMember loginMember = jwtTokenProvider.getLoginMember(accessToken);
@@ -33,7 +33,7 @@ class JwtTokenProviderTest {
 
     @Test
     void 토큰이_만료되면_예외가_발생해야_한다() {
-        JwtTokenProvider jwtTokenProvider = new JwtTokenProvider(SECRET_KEY, 0);
+        JwtTokenProvider jwtTokenProvider = new JwtTokenProvider(new JwtProperties(SECRET_KEY, 0));
         String accessToken = jwtTokenProvider.createAccessToken(member);
 
         assertThatThrownBy(() -> jwtTokenProvider.getLoginMember(accessToken))

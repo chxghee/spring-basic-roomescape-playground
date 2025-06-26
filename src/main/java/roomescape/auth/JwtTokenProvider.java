@@ -2,7 +2,6 @@ package roomescape.auth;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.exception.ApplicationException;
 import roomescape.member.domain.Member;
@@ -13,15 +12,14 @@ import java.util.Date;
 @Component
 public class JwtTokenProvider {
 
+    private static final String CLAIM_ROLE = "role";
+    private static final String CLAIM_NAME = "name";
     private final String secretKey;
     private final int expiration;
 
-    public JwtTokenProvider(
-            @Value("${roomescape.auth.jwt.secret}") String secretKey,
-            @Value("${roomescape.auth.jwt.expiration}") int expiration
-    ) {
-        this.secretKey = secretKey;
-        this.expiration = expiration;
+    public JwtTokenProvider(JwtProperties jwtProperties) {
+        secretKey = jwtProperties.getSecret();
+        expiration = jwtProperties.getExpiration();
     }
 
     public String createAccessToken(Member member) {
@@ -30,8 +28,8 @@ public class JwtTokenProvider {
 
         return Jwts.builder()
                 .setSubject(member.getId().toString())
-                .claim("name", member.getName())
-                .claim("role", member.getRole())
+                .claim(CLAIM_NAME, member.getName())
+                .claim(CLAIM_ROLE, member.getRole())
                 .setIssuedAt(now)
                 .setExpiration(expirationTime)
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
@@ -48,13 +46,13 @@ public class JwtTokenProvider {
 
     public String getLoginMemberName(String accessToken) {
         return getClaims(accessToken)
-                .get("name").toString();
+                .get(CLAIM_NAME).toString();
     }
 
     public Role getLoginMemberRole(String accessToken) {
         return Role.from(
                 getClaims(accessToken)
-                        .get("role").toString()
+                        .get(CLAIM_ROLE).toString()
         );
     }
 
