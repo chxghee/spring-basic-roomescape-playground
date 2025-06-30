@@ -1,5 +1,6 @@
 package roomescape.member.infrastructure;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -7,12 +8,33 @@ import org.springframework.stereotype.Repository;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
 
+import java.util.Optional;
+
 @Repository
 public class MemberDao {
     private JdbcTemplate jdbcTemplate;
 
     public MemberDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+    }
+
+    public Optional<Member> findById(Long id) {
+        try {
+            Member member = jdbcTemplate.queryForObject(
+                    "SELECT id, name, email, password, role FROM member WHERE id = ?",
+                    (rs, rowNum) -> new Member(
+                            rs.getLong("id"),
+                            rs.getString("name"),
+                            rs.getString("email"),
+                            rs.getString("password"),
+                            Role.from(rs.getString("role"))
+                    ),
+                    id
+            );
+            return Optional.of(member);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     public Member save(Member member) {

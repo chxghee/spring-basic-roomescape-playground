@@ -2,12 +2,13 @@ package roomescape.member.presentation;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.auth.AuthenticatedMember;
+import roomescape.auth.JwtProperties;
 import roomescape.auth.JwtTokenProvider;
 import roomescape.auth.LoginMember;
 import roomescape.common.CookieUtil;
@@ -28,10 +29,10 @@ public class MemberController {
 
     public MemberController(MemberService memberService,
                             JwtTokenProvider jwtTokenProvider,
-                            @Value("${roomescape.auth.jwt.expiration}")int accessTokenExpiration) {
+                            JwtProperties JwtProperties) {
         this.memberService = memberService;
         this.jwtTokenProvider = jwtTokenProvider;
-        this.accessTokenExpirationSeconds = accessTokenExpiration / 1000;
+        this.accessTokenExpirationSeconds = JwtProperties.getExpiration() / 1000;
     }
 
     @PostMapping("/members")
@@ -54,9 +55,7 @@ public class MemberController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<LoginMemberResponse> checkLogin(HttpServletRequest request, HttpServletResponse response) {
-        String accessToken = CookieUtil.extractToken(request.getCookies());
-        LoginMember loginMember = jwtTokenProvider.getLoginMember(accessToken);
+    public ResponseEntity<LoginMemberResponse> checkLogin(HttpServletRequest request, @AuthenticatedMember LoginMember loginMember) {
         return ResponseEntity.ok(new LoginMemberResponse(loginMember.name()));
     }
 

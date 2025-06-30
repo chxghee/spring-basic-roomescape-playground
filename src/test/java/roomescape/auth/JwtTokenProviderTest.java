@@ -6,7 +6,6 @@ import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.assertj.core.api.SoftAssertions.*;
 
 
 class JwtTokenProviderTest {
@@ -16,17 +15,13 @@ class JwtTokenProviderTest {
     private final Member member = new Member(1L, "changhee", "asd@email.com", Role.USER);
 
     @Test
-    void 토큰이_생성되면_id_name_role_정보가_포합되어야_한다() {
+    void 토큰이_생성되면_id_정보가_포합되어야_한다() {
         JwtTokenProvider jwtTokenProvider = new JwtTokenProvider(new JwtProperties(SECRET_KEY, EXPIRATION));
         String accessToken = jwtTokenProvider.createAccessToken(member);
 
-        LoginMember loginMember = jwtTokenProvider.getLoginMember(accessToken);
+        Long loginMemberId = jwtTokenProvider.getLoginMemberId(accessToken);
 
-        assertSoftly(soft -> {
-            soft.assertThat(loginMember.id()).isEqualTo(member.getId());
-            soft.assertThat(loginMember.name()).isEqualTo(member.getName());
-            soft.assertThat(loginMember.role()).isEqualTo(member.getRole());
-        });
+        assertThat(loginMemberId).isEqualTo(member.getId());
     }
 
     @Test
@@ -34,7 +29,7 @@ class JwtTokenProviderTest {
         JwtTokenProvider jwtTokenProvider = new JwtTokenProvider(new JwtProperties(SECRET_KEY, 0));
         String accessToken = jwtTokenProvider.createAccessToken(member);
 
-        assertThatThrownBy(() -> jwtTokenProvider.getLoginMember(accessToken))
+        assertThatThrownBy(() -> jwtTokenProvider.getLoginMemberId(accessToken))
                 .isInstanceOf(ApplicationException.class)
                 .extracting("code")
                 .isEqualTo(AuthException.ACCESS_TOKEN_EXPIRED);
