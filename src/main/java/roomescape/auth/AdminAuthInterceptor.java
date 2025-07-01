@@ -7,7 +7,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.common.CookieUtil;
 import roomescape.exception.ApplicationException;
 import roomescape.member.domain.Member;
-import roomescape.member.infrastructure.MemberDao;
+import roomescape.member.domain.MemberRepository;
 
 import java.util.Map;
 import java.util.Set;
@@ -20,12 +20,12 @@ public class AdminAuthInterceptor implements HandlerInterceptor {
             "/themes", Set.of("GET")
     );
     private final JwtTokenProvider jwtTokenProvider;
-    private final MemberDao memberDao;
+    private final MemberRepository memberRepository;
 
 
-    public AdminAuthInterceptor(JwtTokenProvider jwtTokenProvider, MemberDao memberDao) {
+    public AdminAuthInterceptor(JwtTokenProvider jwtTokenProvider, MemberRepository memberRepository) {
         this.jwtTokenProvider = jwtTokenProvider;
-        this.memberDao = memberDao;
+        this.memberRepository = memberRepository;
     }
 
     @Override
@@ -47,7 +47,7 @@ public class AdminAuthInterceptor implements HandlerInterceptor {
     private LoginMember getLoginMemberFromAccessToken(HttpServletRequest request) {
         String accessToken = CookieUtil.extractToken(request.getCookies());
         Long loginMemberId = jwtTokenProvider.getLoginMemberId(accessToken);
-        Member member = memberDao.findById(loginMemberId)
+        Member member = memberRepository.findById(loginMemberId)
                 .orElseThrow(() -> new ApplicationException(AuthException.INVALID_USER_ID));
         return LoginMember.from(member);
     }

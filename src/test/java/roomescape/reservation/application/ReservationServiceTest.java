@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.auth.LoginMember;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
-import roomescape.member.infrastructure.MemberDao;
+import roomescape.member.domain.MemberRepository;
 import roomescape.reservation.presentation.request.ReservationRequest;
 import roomescape.reservation.presentation.response.ReservationResponse;
 
@@ -23,13 +23,13 @@ class ReservationServiceTest {
     @Autowired
     private ReservationService reservationService;
     @Autowired
-    private MemberDao memberDao;
+    private MemberRepository memberRepository;
 
     private Member user;
 
     @BeforeEach
     void setUp() {
-        user = memberDao.save(new Member("유저", "qwe@email.com", "1234", Role.USER));
+        user = memberRepository.save(new Member("유저", "qwe@email.com", "1234", Role.USER));
     }
 
     @Test

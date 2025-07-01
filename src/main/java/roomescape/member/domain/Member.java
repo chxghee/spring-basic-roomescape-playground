@@ -1,19 +1,19 @@
 package roomescape.member.domain;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "member")
 public class Member {
+
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
+
+    @Column(unique = true, nullable = false)
     private String email;
     private String password;
     private Role role;
-
-    public Member(Long id, String name, String email, String password, Role role) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.role = role;
-    }
 
     public Member(Long id, String name, String email, Role role) {
         this.id = id;
@@ -28,6 +28,8 @@ public class Member {
         this.password = password;
         this.role = role;
     }
+
+    protected Member() {}
 
     public Long getId() {
         return id;
