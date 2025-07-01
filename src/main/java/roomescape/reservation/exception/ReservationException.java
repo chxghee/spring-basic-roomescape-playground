@@ -9,9 +9,9 @@ public enum ReservationException implements ExceptionCode {
     INVALID_ADMIN_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 예약 요청", "관리자 예약 시 name은 필수 입력값 입니다.")
     ;
 
-    private HttpStatus httpStatus;
-    private String title;
-    private String detail;
+    private final HttpStatus httpStatus;
+    private final String title;
+    private final String detail;
 
     ReservationException(HttpStatus httpStatus, String title, String detail) {
         this.httpStatus = httpStatus;
