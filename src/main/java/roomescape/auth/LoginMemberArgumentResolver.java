@@ -16,11 +16,9 @@ import roomescape.member.domain.MemberRepository;
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final MemberRepository memberRepository;
 
-    public LoginMemberArgumentResolver(JwtTokenProvider jwtTokenProvider, MemberRepository memberRepository) {
+    public LoginMemberArgumentResolver(JwtTokenProvider jwtTokenProvider) {
         this.jwtTokenProvider = jwtTokenProvider;
-        this.memberRepository = memberRepository;
     }
 
     @Override
@@ -43,9 +41,6 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 
     private LoginMember getLoginMemberFromAccessToken(HttpServletRequest request) {
         String accessToken = CookieUtil.extractToken(request.getCookies());
-        Long loginMemberId = jwtTokenProvider.getLoginMemberId(accessToken);
-        Member member = memberRepository.findById(loginMemberId)
-                .orElseThrow(() -> new ApplicationException(AuthException.INVALID_USER_ID));
-        return LoginMember.from(member);
+        return new LoginMember(jwtTokenProvider.getLoginMemberId(accessToken));
     }
 }

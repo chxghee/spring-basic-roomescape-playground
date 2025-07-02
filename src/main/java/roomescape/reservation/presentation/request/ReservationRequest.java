@@ -14,33 +14,12 @@ public record ReservationRequest(
 
     public ReservationCommand toCommand(LoginMember loginMember) {
         validateRequest();
-        return getReservationMemberCommand(loginMember);
+        return new ReservationCommand(date, loginMember.id(), name, theme, time);
     }
 
     private void validateRequest() {
         if (date == null || theme == null || time == null) {
             throw new ApplicationException(ReservationException.INVALID_REQUEST);
         }
-    }
-
-    private ReservationCommand getReservationMemberCommand(LoginMember loginMember) {
-        if (loginMember.isAdmin()) {
-            return new ReservationCommand(
-                    date,
-                    null,
-                    name,
-                    theme,
-                    time,
-                    loginMember.role()
-            );
-        }
-        return new ReservationCommand(
-                date,
-                loginMember.id(),
-                loginMember.name(),
-                theme,
-                time,
-                loginMember.role()
-        );
     }
 }

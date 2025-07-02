@@ -33,6 +33,10 @@ public class Member {
 
     protected Member() {}
 
+    public boolean isAdmin() {
+        return role.equals(Role.ADMIN);
+    }
+
     public Long getId() {
         return id;
     }

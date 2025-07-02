@@ -35,21 +35,19 @@ public class AdminAuthInterceptor implements HandlerInterceptor {
            return true;
         }
 
-        LoginMember loginMember = getLoginMemberFromAccessToken(request);
+        Member loginMember = getLoginMemberFromAccessToken(request);
 
         if (loginMember.isAdmin()) {
-            request.setAttribute("loginMember", loginMember);
             return true;
         }
         throw new ApplicationException(AuthException.FORBIDDEN_ADMIN_ACCESS);
     }
 
-    private LoginMember getLoginMemberFromAccessToken(HttpServletRequest request) {
+    private Member getLoginMemberFromAccessToken(HttpServletRequest request) {
         String accessToken = CookieUtil.extractToken(request.getCookies());
         Long loginMemberId = jwtTokenProvider.getLoginMemberId(accessToken);
-        Member member = memberRepository.findById(loginMemberId)
+        return memberRepository.findById(loginMemberId)
                 .orElseThrow(() -> new ApplicationException(AuthException.INVALID_USER_ID));
-        return LoginMember.from(member);
     }
 
     private static boolean isWhiteListed(HttpServletRequest request) {

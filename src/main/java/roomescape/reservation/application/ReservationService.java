@@ -51,11 +51,12 @@ public class ReservationService {
     }
 
     private Reservation createReservation(ReservationCommand command, Time time, Theme theme) {
-        if (command.isAdmin()) {
+        Member member = getMember(command.memberId());
+
+        if (member.isAdmin()) {
             return new Reservation(command.name(), command.date(), time, theme);
         }
 
-        Member member = getMember(command.memberId());
         return new Reservation(member, command.date(), time, theme);
     }
 
