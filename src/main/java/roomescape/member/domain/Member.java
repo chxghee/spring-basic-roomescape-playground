@@ -13,6 +13,8 @@ public class Member {
     @Column(unique = true, nullable = false)
     private String email;
     private String password;
+
+    @Enumerated(EnumType.STRING)
     private Role role;
 
     public Member(Long id, String name, String email, Role role) {

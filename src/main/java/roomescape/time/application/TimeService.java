@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.exception.ApplicationException;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.infrastructure.ReservationDao;
+import roomescape.reservation.infrastructure.ReservationRepository;
 import roomescape.time.exception.TimeException;
 import roomescape.time.presentation.AvailableTime;
 import roomescape.time.domain.Time;
@@ -17,15 +17,15 @@ import java.util.List;
 public class TimeService {
 
     private TimeRepository timeRepository;
-    private ReservationDao reservationDao;
+    private ReservationRepository reservationRepository;
 
-    public TimeService(TimeRepository timeRepository, ReservationDao reservationDao) {
+    public TimeService(TimeRepository timeRepository, ReservationRepository reservationRepository) {
         this.timeRepository = timeRepository;
-        this.reservationDao = reservationDao;
+        this.reservationRepository = reservationRepository;
     }
 
     public List<AvailableTime> getAvailableTime(String date, Long themeId) {
-        List<Reservation> reservations = reservationDao.findByDateAndThemeId(date, themeId);
+        List<Reservation> reservations = reservationRepository.findByDateAndThemeId(date, themeId);
         List<Time> times = timeRepository.findAll();
 
         return times.stream()

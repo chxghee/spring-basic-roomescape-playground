@@ -1,22 +1,25 @@
 package roomescape.reservation.domain;
 
+import jakarta.persistence.*;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.Time;
 
+@Entity
+@Table(name = "reservation")
 public class Reservation {
+
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private String date;
-    private Time time;
-    private Theme theme;
 
-    public Reservation(Long id, String name, String date, Time time, Theme theme) {
-        this.id = id;
-        this.name = name;
-        this.date = date;
-        this.time = time;
-        this.theme = theme;
-    }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "time_id")
+    private Time time;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "theme_id")
+    private Theme theme;
 
     public Reservation(String name, String date, Time time, Theme theme) {
         this.name = name;
@@ -25,7 +28,7 @@ public class Reservation {
         this.theme = theme;
     }
 
-    public Reservation() {
+    protected Reservation() {
 
     }
 
