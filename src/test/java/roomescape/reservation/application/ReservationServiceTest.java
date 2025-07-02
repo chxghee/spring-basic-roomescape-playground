@@ -26,16 +26,19 @@ class ReservationServiceTest {
     private MemberRepository memberRepository;
 
     private Member user;
+    private Member admin;
+
 
     @BeforeEach
     void setUp() {
         user = memberRepository.save(new Member("유저", "qwe@email.com", "1234", Role.USER));
+        admin = memberRepository.save(new Member("어드민 유저", "ert@email.com", "1234", Role.ADMIN));
     }
 
     @Test
-    void 예약요청에_이름값이_있으면_해당_이름으로_예약을_생성해야_한다() {
+    void 로그인한_유저의_권한이_ADMIN이라면_요청의_이름으로_예약을_생성해야_한다() {
         ReservationRequest request = new ReservationRequest("2024-03-01", "다른유저", 1L, 1L);
-        LoginMember loginMember = new LoginMember(user.getId(), user.getName(), user.getRole());
+        LoginMember loginMember = new LoginMember(admin.getId(), admin.getName(), admin.getRole());
 
         ReservationCommand command = request.toCommand(loginMember);
         ReservationResponse result = reservationService.save(command);
@@ -44,7 +47,7 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 예약요청에_이름값이_없으면_로그인한_유저이름으로_예약이_생성되어야_한다() {
+    void 로그인한_유저의_권한이_USER라면_유저이름으로_예약이_생성되어야_한다() {
         ReservationRequest request = new ReservationRequest("2024-03-01", null,1L, 1L);
         LoginMember loginMember = new LoginMember(user.getId(), user.getName(), user.getRole());
 

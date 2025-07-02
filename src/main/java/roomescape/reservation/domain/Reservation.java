@@ -1,6 +1,7 @@
 package roomescape.reservation.domain;
 
 import jakarta.persistence.*;
+import roomescape.member.domain.Member;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.Time;
 
@@ -10,7 +11,13 @@ public class Reservation {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String name;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
+
     private String date;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -21,6 +28,9 @@ public class Reservation {
     @JoinColumn(name = "theme_id")
     private Theme theme;
 
+    @Column(nullable = false)
+    private Long waitingOrder = 0L;
+
     public Reservation(String name, String date, Time time, Theme theme) {
         this.name = name;
         this.date = date;
@@ -28,8 +38,15 @@ public class Reservation {
         this.theme = theme;
     }
 
-    protected Reservation() {
+    public Reservation(Member member, String date, Time time, Theme theme) {
+        this.name = member.getName();
+        this.member = member;
+        this.date = date;
+        this.time = time;
+        this.theme = theme;
+    }
 
+    protected Reservation() {
     }
 
     public Long getId() {
@@ -38,6 +55,10 @@ public class Reservation {
 
     public String getName() {
         return name;
+    }
+
+    public Member getMember() {
+        return member;
     }
 
     public String getDate() {
@@ -50,5 +71,9 @@ public class Reservation {
 
     public Theme getTheme() {
         return theme;
+    }
+
+    public Long getWaitingOrder() {
+        return waitingOrder;
     }
 }

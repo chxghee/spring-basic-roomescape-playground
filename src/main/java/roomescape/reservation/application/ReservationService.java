@@ -2,9 +2,14 @@ package roomescape.reservation.application;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.auth.LoginMember;
 import roomescape.exception.ApplicationException;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.MemberRepository;
+import roomescape.member.exception.MemberException;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.infrastructure.ReservationRepository;
+import roomescape.reservation.domain.ReservationRepository;
+import roomescape.reservation.presentation.response.MyReservationResponse;
 import roomescape.reservation.presentation.response.ReservationResponse;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeRepository;
@@ -20,23 +25,39 @@ import java.util.List;
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
+    private final MemberRepository memberRepository;
     private final ThemeRepository themeRepository;
     private final TimeRepository timeRepository;
 
 
-    public ReservationService(ReservationRepository reservationRepository, ThemeRepository themeRepository, TimeRepository timeRepository) {
+    public ReservationService(ReservationRepository reservationRepository, MemberRepository memberRepository, ThemeRepository themeRepository, TimeRepository timeRepository) {
         this.reservationRepository = reservationRepository;
+        this.memberRepository = memberRepository;
         this.themeRepository = themeRepository;
         this.timeRepository = timeRepository;
     }
 
     @Transactional
-    public ReservationResponse save(ReservationCommand reservationCommand) {
-        Time time = getTime(reservationCommand.time());
-        Theme theme = getTheme(reservationCommand.theme());
-        Reservation newReservation = new Reservation(reservationCommand.name(), reservationCommand.date(), time, theme);
+    public ReservationResponse save(ReservationCommand command) {
+        Time time = getTime(command.time());
+        Theme theme = getTheme(command.theme());
+        Reservation newReservation = createReservation(command, time, theme);
         reservationRepository.save(newReservation);
         return ReservationResponse.from(newReservation);
+    }
+
+    private Reservation createReservation(ReservationCommand command, Time time, Theme theme) {
+        if (command.isAdmin()) {
+            return new Reservation(command.name(), command.date(), time, theme);
+        }
+
+        Member member = getMember(command.memberId());
+        return new Reservation(member, command.date(), time, theme);
+    }
+
+    private Member getMember(Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new ApplicationException(MemberException.MEMBER_NOT_FOUND));
     }
 
     private Theme getTheme(Long id) {
@@ -57,6 +78,13 @@ public class ReservationService {
     public List<ReservationResponse> findAll() {
         return reservationRepository.findAll().stream()
                 .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(), it.getTime().getValue()))
+                .toList();
+    }
+
+    public List<MyReservationResponse> findMyReservations(LoginMember loginMember) {
+        return reservationRepository.findByMemberId(loginMember.id())
+                .stream()
+                .map(MyReservationResponse::from)
                 .toList();
     }
 }

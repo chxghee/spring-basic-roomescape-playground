@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.exception.ApplicationException;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.infrastructure.ReservationRepository;
+import roomescape.reservation.domain.ReservationRepository;
 import roomescape.time.exception.TimeException;
 import roomescape.time.presentation.AvailableTime;
 import roomescape.time.domain.Time;

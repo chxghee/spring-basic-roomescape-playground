@@ -14,13 +14,7 @@ public record ReservationRequest(
 
     public ReservationCommand toCommand(LoginMember loginMember) {
         validateRequest();
-        String reservationMember = getReservationMember(loginMember);
-        return new ReservationCommand(
-                date,
-                reservationMember,
-                theme,
-                time
-        );
+        return getReservationMemberCommand(loginMember);
     }
 
     private void validateRequest() {
@@ -29,11 +23,24 @@ public record ReservationRequest(
         }
     }
 
-    private String getReservationMember(LoginMember loginMember) {
-        String reservationMember = loginMember.name();
-        if (name != null) {
-            reservationMember = name;
+    private ReservationCommand getReservationMemberCommand(LoginMember loginMember) {
+        if (loginMember.isAdmin()) {
+            return new ReservationCommand(
+                    date,
+                    null,
+                    name,
+                    theme,
+                    time,
+                    loginMember.role()
+            );
         }
-        return reservationMember;
+        return new ReservationCommand(
+                date,
+                loginMember.id(),
+                loginMember.name(),
+                theme,
+                time,
+                loginMember.role()
+        );
     }
 }

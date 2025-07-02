@@ -1,10 +1,9 @@
-package roomescape.reservation.infrastructure;
+package roomescape.reservation.domain;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 import roomescape.exception.ApplicationException;
-import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.exception.ReservationException;
 
 import java.util.List;
@@ -43,6 +42,16 @@ public class ReservationRepository {
                 "and t.id = :themId", Reservation.class)
                 .setParameter("data", date)
                 .setParameter("themId", themeId)
+                .getResultList();
+    }
+
+    public List<Reservation> findByMemberId(Long memberId) {
+        return entityManager.createQuery("select r from Reservation r " +
+                "join fetch r.theme t " +
+                "join fetch r.time ti " +
+                "join fetch r.member m " +
+                "where m.id = :memberId", Reservation.class)
+                .setParameter("memberId", memberId)
                 .getResultList();
     }
 }

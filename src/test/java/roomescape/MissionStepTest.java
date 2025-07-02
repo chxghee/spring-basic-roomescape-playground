@@ -54,7 +54,7 @@ public class MissionStepTest {
 
     @Test
     void 이단계() {
-        String token = createToken("admin@email.com", "password");
+        String token = createToken("brown@email.com", "password");
 
         Map<String, String> params = new HashMap<>();
         params.put("date", "2024-03-01");
@@ -71,7 +71,7 @@ public class MissionStepTest {
 
         assertSoftly(soft -> {
             soft.assertThat(response.statusCode()).isEqualTo(201);
-            soft.assertThat(response.as(ReservationResponse.class).name()).isEqualTo("어드민");
+            soft.assertThat(response.as(ReservationResponse.class).name()).isEqualTo("브라운");
         });
 
         params.put("name", "브라운");
