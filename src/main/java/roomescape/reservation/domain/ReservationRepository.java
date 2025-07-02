@@ -4,7 +4,10 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 import roomescape.exception.ApplicationException;
+import roomescape.member.domain.Member;
 import roomescape.reservation.exception.ReservationException;
+import roomescape.theme.domain.Theme;
+import roomescape.time.domain.Time;
 
 import java.util.List;
 
@@ -53,5 +56,22 @@ public class ReservationRepository {
                 "where m.id = :memberId", Reservation.class)
                 .setParameter("memberId", memberId)
                 .getResultList();
+    }
+
+    public Boolean existsByMemberAndDateAndTimeAndTheme(Member member, String date, Time time, Theme theme) {
+        String jpql = "select case when exists (" +
+                "select r from Reservation r " +
+                "where r.member = :member " +
+                "and r.date = :date " +
+                "and r.time = :time " +
+                "and r.theme = :theme" +
+                ") then true else false end";
+
+        return entityManager.createQuery(jpql, Boolean.class)
+                .setParameter("member", member)
+                .setParameter("date", date)
+                .setParameter("time", time)
+                .setParameter("theme", theme)
+                .getSingleResult();
     }
 }

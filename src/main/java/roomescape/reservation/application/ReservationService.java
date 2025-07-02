@@ -17,21 +17,25 @@ import roomescape.theme.exception.ThemeException;
 import roomescape.time.domain.Time;
 import roomescape.time.domain.TimeRepository;
 import roomescape.time.exception.TimeException;
+import roomescape.waiting.domain.WaitingRepository;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 @Service
 @Transactional(readOnly = true)
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
+    private final WaitingRepository waitingRepository;
     private final MemberRepository memberRepository;
     private final ThemeRepository themeRepository;
     private final TimeRepository timeRepository;
 
-
-    public ReservationService(ReservationRepository reservationRepository, MemberRepository memberRepository, ThemeRepository themeRepository, TimeRepository timeRepository) {
+    public ReservationService(ReservationRepository reservationRepository, WaitingRepository waitingRepository,
+                              MemberRepository memberRepository, ThemeRepository themeRepository, TimeRepository timeRepository) {
         this.reservationRepository = reservationRepository;
+        this.waitingRepository = waitingRepository;
         this.memberRepository = memberRepository;
         this.themeRepository = themeRepository;
         this.timeRepository = timeRepository;
@@ -82,9 +86,19 @@ public class ReservationService {
     }
 
     public List<MyReservationResponse> findMyReservations(LoginMember loginMember) {
-        return reservationRepository.findByMemberId(loginMember.id())
+        List<MyReservationResponse> reservationList = reservationRepository.findByMemberId(loginMember.id())
                 .stream()
                 .map(MyReservationResponse::from)
                 .toList();
+
+        List<MyReservationResponse> waitingList = waitingRepository.findWaitingsWithRankByMemberId(loginMember.id())
+                .stream()
+                .map(MyReservationResponse::from)
+                .toList();
+
+        return Stream.concat(
+                reservationList.stream(),
+                waitingList.stream()
+        ).toList();
     }
 }
