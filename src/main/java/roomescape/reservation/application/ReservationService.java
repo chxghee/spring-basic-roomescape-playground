@@ -9,6 +9,7 @@ import roomescape.member.domain.MemberRepository;
 import roomescape.member.exception.MemberException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
+import roomescape.reservation.exception.ReservationException;
 import roomescape.reservation.presentation.response.MyReservationResponse;
 import roomescape.reservation.presentation.response.ReservationResponse;
 import roomescape.theme.domain.Theme;
@@ -45,6 +46,10 @@ public class ReservationService {
     public ReservationResponse save(ReservationCommand command) {
         Time time = getTime(command.time());
         Theme theme = getTheme(command.theme());
+        if (reservationRepository.existsByDateAndTimeAndTheme(command.date(), time, theme)) {
+            throw new ApplicationException(ReservationException.DUPLICATE_RESERVATION_REQUEST);
+        }
+
         Reservation newReservation = createReservation(command, time, theme);
         reservationRepository.save(newReservation);
         return ReservationResponse.from(newReservation);

@@ -7,9 +7,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.auth.LoginMember;
+import roomescape.exception.ApplicationException;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
 import roomescape.member.domain.MemberRepository;
+import roomescape.reservation.exception.ReservationException;
 import roomescape.reservation.presentation.request.ReservationRequest;
 import roomescape.reservation.presentation.response.MyReservationResponse;
 import roomescape.reservation.presentation.response.ReservationResponse;
@@ -45,7 +47,7 @@ class ReservationServiceTest {
     private Member admin;
     private Time time;
     private Theme theme;
-    private String date = "2025-10-21";
+    private final String date = "2025-10-21";
 
     @BeforeEach
     void setUp() {
@@ -75,6 +77,21 @@ class ReservationServiceTest {
         ReservationResponse result = reservationService.save(command);
 
         assertThat(result.name()).isEqualTo("유저");
+    }
+
+    @Test
+    void 이미_동일시간_동일테마가_예약되었다면_예외가_발생해야_한다() {
+        ReservationCommand command1 = new ReservationCommand(date, admin.getId(), null, theme.getId(), time.getId());
+        reservationService.save(command1);
+
+
+        ReservationRequest request = new ReservationRequest(date, null, theme.getId(), time.getId());
+        LoginMember loginMember = new LoginMember(user.getId());
+
+        ReservationCommand command2 = request.toCommand(loginMember);
+        assertThatThrownBy(() -> reservationService.save(command2))
+                .isInstanceOf(ApplicationException.class)
+                .hasMessage(ReservationException.DUPLICATE_RESERVATION_REQUEST.getTitle());
     }
 
     @Test

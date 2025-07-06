@@ -59,13 +59,13 @@ public class MissionStepTest {
     void 이단계() {
         String token = createToken("brown@email.com", "password");
 
-        Map<String, String> params = new HashMap<>();
-        params.put("date", "2024-03-01");
-        params.put("time", "1");
-        params.put("theme", "1");
+        Map<String, String> params1 = new HashMap<>();
+        params1.put("date", "2024-03-02");
+        params1.put("time", "1");
+        params1.put("theme", "1");
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
+                .body(params1)
                 .cookie("token", token)
                 .contentType(ContentType.JSON)
                 .post("/reservations")
@@ -77,10 +77,13 @@ public class MissionStepTest {
             soft.assertThat(response.as(ReservationResponse.class).name()).isEqualTo("브라운");
         });
 
-        params.put("name", "브라운");
+        Map<String, String> params2 = new HashMap<>();
+        params2.put("date", "2024-03-03");
+        params2.put("time", "1");
+        params2.put("theme", "1");
 
         ExtractableResponse<Response> adminResponse = RestAssured.given().log().all()
-                .body(params)
+                .body(params2)
                 .cookie("token", token)
                 .contentType(ContentType.JSON)
                 .post("/reservations")

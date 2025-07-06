@@ -74,4 +74,19 @@ public class ReservationRepository {
                 .setParameter("theme", theme)
                 .getSingleResult();
     }
+
+    public Boolean existsByDateAndTimeAndTheme(String date, Time time, Theme theme) {
+        String jpql = "select case when exists (" +
+                "select r from Reservation r " +
+                "where r.date = :date " +
+                "and r.time = :time " +
+                "and r.theme = :theme" +
+                ") then true else false end";
+
+        return entityManager.createQuery(jpql, Boolean.class)
+                .setParameter("date", date)
+                .setParameter("time", time)
+                .setParameter("theme", theme)
+                .getSingleResult();
+    }
 }
