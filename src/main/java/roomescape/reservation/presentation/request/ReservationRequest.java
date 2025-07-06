@@ -5,6 +5,9 @@ import roomescape.exception.ApplicationException;
 import roomescape.reservation.exception.ReservationException;
 import roomescape.reservation.application.ReservationCommand;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public record ReservationRequest(
         String date,
         String name,
@@ -18,8 +21,20 @@ public record ReservationRequest(
     }
 
     private void validateRequest() {
-        if (date == null || theme == null || time == null) {
-            throw new ApplicationException(ReservationException.INVALID_REQUEST);
+        List<String> errorFields = new ArrayList<>();
+
+        if (date == null) {
+            errorFields.add("날짜");
+        }
+        if (theme == null) {
+            errorFields.add("테마");
+        }
+        if (time == null) {
+            errorFields.add("시간");
+        }
+
+        if (!errorFields.isEmpty()) {
+            throw new ApplicationException(ReservationException.INVALID_REQUEST, errorFields);
         }
     }
 }

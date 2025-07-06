@@ -62,7 +62,7 @@ class WaitingServiceTest {
 
         assertThatThrownBy(() -> waitingService.save(waitingCommand))
                 .isInstanceOf(ApplicationException.class)
-                .hasMessage(ReservationException.DUPLICATE_RESERVATION_REQUEST.getTitle());
+                .hasMessage(ReservationException.DUPLICATE_RESERVATION_REQUEST.getDetail());
     }
 
     @Test
@@ -72,7 +72,7 @@ class WaitingServiceTest {
 
         assertThatThrownBy(() -> waitingService.save(waitingCommand))
                 .isInstanceOf(ApplicationException.class)
-                .hasMessage(WaitingException.DUPLICATE_WAITING_REQUEST.getTitle());
+                .hasMessage(WaitingException.DUPLICATE_WAITING_REQUEST.getDetail());
     }
 
     @Test
@@ -85,7 +85,7 @@ class WaitingServiceTest {
 
         assertThatThrownBy(() -> waitingService.delete(loginMember, otherPersonWaiting.id()))
                 .isInstanceOf(ApplicationException.class)
-                .hasMessage(AuthException.FORBIDDEN_ACCESS.getTitle());
+                .hasMessage(AuthException.FORBIDDEN_ACCESS.getDetail());
     }
 
     @Test

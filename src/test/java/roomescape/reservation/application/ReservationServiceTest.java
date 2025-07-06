@@ -91,7 +91,7 @@ class ReservationServiceTest {
         ReservationCommand command2 = request.toCommand(loginMember);
         assertThatThrownBy(() -> reservationService.save(command2))
                 .isInstanceOf(ApplicationException.class)
-                .hasMessage(ReservationException.DUPLICATE_RESERVATION_REQUEST.getTitle());
+                .hasMessage(ReservationException.DUPLICATE_RESERVATION_REQUEST.getDetail());
     }
 
     @Test

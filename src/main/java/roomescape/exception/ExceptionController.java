@@ -18,6 +18,6 @@ public class ExceptionController {
     @ExceptionHandler(ApplicationException.class)
     public ResponseEntity<ErrorResponse> handleApplicationException(ApplicationException e, HttpServletRequest request) {
         return ResponseEntity.status(e.getCode().getHttpStatus())
-                .body(ErrorResponse.of(e.getCode(), request.getRequestURI()));
+                .body(ErrorResponse.of(e.getCode(), request.getRequestURI(), e.getMessage()));
     }
 }
