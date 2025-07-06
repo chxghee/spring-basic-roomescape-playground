@@ -5,7 +5,6 @@ import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 import roomescape.exception.ApplicationException;
 import roomescape.member.exception.MemberException;
-import roomescape.member.presentation.request.LoginRequest;
 
 import java.util.Optional;
 

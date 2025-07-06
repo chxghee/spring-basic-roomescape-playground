@@ -10,14 +10,14 @@ public record WaitingResponse(
         String time,
         Long waitingNumber
 ) {
-    public static WaitingResponse from(Waiting waiting, Long waitingNumber) {
+    public static WaitingResponse from(Waiting waiting) {
         return new WaitingResponse(
                 waiting.getId(),
                 waiting.getMember().getName(),
                 waiting.getTheme().getName(),
                 waiting.getDate(),
                 waiting.getTime().getValue(),
-                waitingNumber
+                waiting.getOrder()
         );
     }
 }

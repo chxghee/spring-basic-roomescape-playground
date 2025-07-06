@@ -49,11 +49,13 @@ public class ReservationRepository {
     }
 
     public List<Reservation> findByMemberId(Long memberId) {
-        return entityManager.createQuery("select r from Reservation r " +
+        String jpql = "select r from Reservation r " +
                 "join fetch r.theme t " +
                 "join fetch r.time ti " +
                 "join fetch r.member m " +
-                "where m.id = :memberId", Reservation.class)
+                "where m.id = :memberId";
+
+        return entityManager.createQuery(jpql, Reservation.class)
                 .setParameter("memberId", memberId)
                 .getResultList();
     }
@@ -69,21 +71,6 @@ public class ReservationRepository {
 
         return entityManager.createQuery(jpql, Boolean.class)
                 .setParameter("member", member)
-                .setParameter("date", date)
-                .setParameter("time", time)
-                .setParameter("theme", theme)
-                .getSingleResult();
-    }
-
-    public Boolean existsByDateAndTimeAndTheme(String date, Time time, Theme theme) {
-        String jpql = "select case when exists (" +
-                "select r from Reservation r " +
-                "where r.date = :date " +
-                "and r.time = :time " +
-                "and r.theme = :theme" +
-                ") then true else false end";
-
-        return entityManager.createQuery(jpql, Boolean.class)
                 .setParameter("date", date)
                 .setParameter("time", time)
                 .setParameter("theme", theme)

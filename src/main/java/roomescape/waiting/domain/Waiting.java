@@ -26,13 +26,17 @@ public class Waiting {
     @JoinColumn(name = "theme_id")
     private Theme theme;
 
+    @Column(name = "waiting_order")
+    private Long order;
+
     protected Waiting() {}
 
-    public Waiting(Member member, String date, Time time, Theme theme) {
+    public Waiting(Member member, String date, Time time, Theme theme, Long order) {
         this.member = member;
         this.date = date;
         this.time = time;
         this.theme = theme;
+        this.order = order;
     }
 
     public boolean belongsTo(Long loginMemberId) {
@@ -57,5 +61,9 @@ public class Waiting {
 
     public Theme getTheme() {
         return theme;
+    }
+
+    public Long getOrder() {
+        return order;
     }
 }

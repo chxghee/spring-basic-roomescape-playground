@@ -49,38 +49,46 @@ public class WaitingRepository {
                 .getSingleResult();
     }
 
-    public Long countByDateAndTimeAndTheme(String date, Time time, Theme theme) {
-        String jpql = "select count(w) from Waiting w " +
-                "where w.date = :date " +
-                "and w.time = :time " +
-                "and w.theme = :theme";
-
-        return entityManager.createQuery(jpql, Long.class)
-                .setParameter("date", date)
-                .setParameter("time", time)
-                .setParameter("theme", theme)
-                .getSingleResult();
-    }
-
     public void delete(Waiting waiting) {
-        entityManager.remove(waiting);
+        if (entityManager.contains(waiting)) {
+            entityManager.remove(waiting);
+        } else {
+            Waiting merged = entityManager.merge(waiting);
+            entityManager.remove(merged);
+        }
     }
 
-    public List<WaitingWithRank> findWaitingsWithRankByMemberId(Long memberId) {
+    public List<Waiting> findByMemberId(Long memberId) {
+        String jpql = "select w from Waiting w " +
+                "join fetch w.theme t " +
+                "join fetch w.time ti " +
+                "join fetch w.member m " +
+                "where m.id = :memberId";
 
-        return entityManager.createQuery("select new roomescape.waiting.domain.WaitingWithRank(" +
-                                "w, " +
-                                "(" +
-                                    "select count(w2) + 1 from Waiting w2 " +
-                                    "where w2.theme = w.theme " +
-                                    "and w2.date = w.date " +
-                                    "and w2.time = w.time " +
-                                    "and w2.id < w.id" +
-                                ")) " +
-                                "from Waiting w " +
-                                "where w.member.id = :memberId"
-                , WaitingWithRank.class)
+        return entityManager.createQuery(jpql, Waiting.class)
                 .setParameter("memberId", memberId)
                 .getResultList();
+    }
+
+    public void decrementOrder(Theme theme, String date, Time time, Long deletedOrder) {
+        // 벌크 쿼리 전 영속 플러시
+        entityManager.flush();
+
+        String jpql = "update Waiting w " +
+                "set w.order = w.order - 1 " +
+                "where w.theme = :theme " +
+                "and w.date = :date " +
+                "and w.time = :time " +
+                "and w.order > :deletedOrder";
+
+        entityManager.createQuery(jpql)
+                .setParameter("theme", theme)
+                .setParameter("date", date)
+                .setParameter("time", time)
+                .setParameter("deletedOrder", deletedOrder)
+                .executeUpdate();
+
+        // 벌크 쿼리 후 영속 비우기
+        entityManager.clear();
     }
 }

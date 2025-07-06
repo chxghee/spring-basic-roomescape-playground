@@ -82,7 +82,7 @@ public class ReservationService {
                 .map(MyReservationResponse::from)
                 .toList();
 
-        List<MyReservationResponse> waitingList = waitingRepository.findWaitingsWithRankByMemberId(loginMember.id())
+        List<MyReservationResponse> waitingList = waitingRepository.findByMemberId(loginMember.id())
                 .stream()
                 .map(MyReservationResponse::from)
                 .toList();

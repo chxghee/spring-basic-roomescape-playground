@@ -1,7 +1,7 @@
 package roomescape.reservation.presentation.response;
 
 import roomescape.reservation.domain.Reservation;
-import roomescape.waiting.domain.WaitingWithRank;
+import roomescape.waiting.domain.Waiting;
 
 public record MyReservationResponse(
         Long id,
@@ -23,13 +23,13 @@ public record MyReservationResponse(
         );
     }
 
-    public static MyReservationResponse from(WaitingWithRank waitingWithRank) {
+    public static MyReservationResponse from(Waiting waiting) {
         return new MyReservationResponse(
-                waitingWithRank.getWaiting().getId(),
-                waitingWithRank.getWaiting().getTheme().getName(),
-                waitingWithRank.getWaiting().getDate(),
-                waitingWithRank.getWaiting().getTime().getValue(),
-                waitingWithRank.getRank() + RESERVATION_WAITING_STATUS_MESSAGE
+                waiting.getId(),
+                waiting.getTheme().getName(),
+                waiting.getDate(),
+                waiting.getTime().getValue(),
+                waiting.getOrder() + RESERVATION_WAITING_STATUS_MESSAGE
         );
     }
 
