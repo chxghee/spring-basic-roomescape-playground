@@ -3,9 +3,11 @@ package roomescape.waiting.domain;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
+import roomescape.exception.ApplicationException;
 import roomescape.member.domain.Member;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.Time;
+import roomescape.waiting.exception.WaitingException;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,6 +20,11 @@ public class WaitingRepository {
 
     public Optional<Waiting> findById(Long id) {
         return Optional.ofNullable(entityManager.find(Waiting.class, id));
+    }
+
+    public Waiting getWaitingById(Long waitingId) {
+        return findById(waitingId)
+                .orElseThrow(() -> new ApplicationException(WaitingException.WAITING_NOT_FOUND));
     }
 
     public Waiting save(Waiting waiting) {

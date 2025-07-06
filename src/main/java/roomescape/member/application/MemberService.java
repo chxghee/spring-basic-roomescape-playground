@@ -25,26 +25,17 @@ public class MemberService {
 
     @Transactional
     public MemberResponse createMember(MemberRequest memberRequest) {
-        Member member = memberRepository.save(new Member(memberRequest.name(), memberRequest.email(), memberRequest.password(), Role.USER));
-        return new MemberResponse(member.getId(), member.getName(), member.getEmail());
+        Member signUpMember = new Member(memberRequest.name(), memberRequest.email(), memberRequest.password(), Role.USER);
+        memberRepository.save(signUpMember);
+        return new MemberResponse(signUpMember.getId(), signUpMember.getName(), signUpMember.getEmail());
     }
 
     public Member loginMember(LoginRequest loginRequest) {
-        return getMemberByLoginRequest(loginRequest);
-    }
-
-    private Member getMemberByLoginRequest(LoginRequest loginRequest) {
-        return memberRepository.findByEmailAndPassword(loginRequest.email(), loginRequest.password())
-                .orElseThrow(() -> new ApplicationException(MemberException.LOGIN_FAILED));
+        return memberRepository.getMemberByEmailAndPassword(loginRequest.email(), loginRequest.password());
     }
 
     public LoginMemberResponse checkLogin(LoginMember loginMember) {
-        Member member = getMember(loginMember.id());
+        Member member = memberRepository.getMemberById(loginMember.id());
         return new LoginMemberResponse(member.getName());
-    }
-
-    private Member getMember(Long memberId) {
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new ApplicationException(MemberException.MEMBER_NOT_FOUND));
     }
 }

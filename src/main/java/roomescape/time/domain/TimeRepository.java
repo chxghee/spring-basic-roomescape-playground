@@ -3,6 +3,8 @@ package roomescape.time.domain;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
+import roomescape.exception.ApplicationException;
+import roomescape.time.exception.TimeException;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +21,11 @@ public class TimeRepository {
                 .getResultList()
                 .stream()
                 .findFirst();
+    }
+
+    public Time getTimeById(Long id) {
+        return findById(id)
+                .orElseThrow(() -> new ApplicationException(TimeException.TIME_NOT_FOUND));
     }
 
     public List<Time> findAll() {

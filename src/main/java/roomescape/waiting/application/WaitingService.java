@@ -7,15 +7,12 @@ import roomescape.auth.LoginMember;
 import roomescape.exception.ApplicationException;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberRepository;
-import roomescape.member.exception.MemberException;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservation.exception.ReservationException;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeRepository;
-import roomescape.theme.exception.ThemeException;
 import roomescape.time.domain.Time;
 import roomescape.time.domain.TimeRepository;
-import roomescape.time.exception.TimeException;
 import roomescape.waiting.application.command.WaitingCommand;
 import roomescape.waiting.domain.Waiting;
 import roomescape.waiting.domain.WaitingRepository;
@@ -43,9 +40,9 @@ public class WaitingService {
 
     @Transactional
     public WaitingResponse save(WaitingCommand command) {
-        Time time = getTime(command.time());
-        Theme theme = getTheme(command.theme());
-        Member member = getMember(command.memberId());
+        Time time = timeRepository.getTimeById(command.time());
+        Theme theme = themeRepository.getThemeById(command.theme());
+        Member member = memberRepository.getMemberById(command.memberId());
 
         validateDuplicateRequest(command.date(), member, time, theme);
 
@@ -64,33 +61,13 @@ public class WaitingService {
         }
     }
 
-    private Member getMember(Long memberId) {
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new ApplicationException(MemberException.MEMBER_NOT_FOUND));
-    }
-
-    private Theme getTheme(Long id) {
-        return themeRepository.findById(id)
-                .orElseThrow(() -> new ApplicationException(ThemeException.THEME_NOT_FOUND));
-    }
-
-    private Time getTime(Long id) {
-        return timeRepository.findById(id)
-                .orElseThrow(() -> new ApplicationException(TimeException.TIME_NOT_FOUND));
-    }
-
     @Transactional
     public void delete(LoginMember loginMember, Long waitingId) {
-        Waiting waiting = getWaiting(waitingId);
+        Waiting waiting = waitingRepository.getWaitingById(waitingId);
 
         if (!waiting.belongsTo(loginMember.id())) {
             throw new ApplicationException(AuthException.FORBIDDEN_ACCESS);
         }
         waitingRepository.delete(waiting);
-    }
-
-    private Waiting getWaiting(Long waitingId) {
-        return waitingRepository.findById(waitingId)
-                .orElseThrow(() -> new ApplicationException(WaitingException.WAITING_NOT_FOUND));
     }
 }

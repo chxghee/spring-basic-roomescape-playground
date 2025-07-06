@@ -3,6 +3,8 @@ package roomescape.theme.domain;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
+import roomescape.exception.ApplicationException;
+import roomescape.theme.exception.ThemeException;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +21,11 @@ public class ThemeRepository {
                  .getResultList()
                  .stream()
                  .findFirst();
+    }
+
+    public Theme getThemeById(Long id) {
+        return findById(id)
+                .orElseThrow(() -> new ApplicationException(ThemeException.THEME_NOT_FOUND));
     }
 
     public List<Theme> findAll() {

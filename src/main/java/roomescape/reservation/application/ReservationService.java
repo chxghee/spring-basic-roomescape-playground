@@ -14,10 +14,8 @@ import roomescape.reservation.presentation.response.MyReservationResponse;
 import roomescape.reservation.presentation.response.ReservationResponse;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeRepository;
-import roomescape.theme.exception.ThemeException;
 import roomescape.time.domain.Time;
 import roomescape.time.domain.TimeRepository;
-import roomescape.time.exception.TimeException;
 import roomescape.waiting.domain.WaitingRepository;
 
 import java.util.List;
@@ -44,8 +42,8 @@ public class ReservationService {
 
     @Transactional
     public ReservationResponse save(ReservationCommand command) {
-        Time time = getTime(command.time());
-        Theme theme = getTheme(command.theme());
+        Time time = timeRepository.getTimeById(command.time());
+        Theme theme = themeRepository.getThemeById(command.theme());
         if (reservationRepository.existsByDateAndTimeAndTheme(command.date(), time, theme)) {
             throw new ApplicationException(ReservationException.DUPLICATE_RESERVATION_REQUEST);
         }
@@ -56,28 +54,13 @@ public class ReservationService {
     }
 
     private Reservation createReservation(ReservationCommand command, Time time, Theme theme) {
-        Member member = getMember(command.memberId());
+        Member member = memberRepository.getMemberById(command.memberId());
 
         if (member.isAdmin()) {
             return new Reservation(command.name(), command.date(), time, theme);
         }
 
         return new Reservation(member, command.date(), time, theme);
-    }
-
-    private Member getMember(Long memberId) {
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new ApplicationException(MemberException.MEMBER_NOT_FOUND));
-    }
-
-    private Theme getTheme(Long id) {
-        return themeRepository.findById(id)
-                .orElseThrow(() -> new ApplicationException(ThemeException.THEME_NOT_FOUND));
-    }
-
-    private Time getTime(Long id) {
-        return timeRepository.findById(id)
-                .orElseThrow(() -> new ApplicationException(TimeException.TIME_NOT_FOUND));
     }
 
     @Transactional

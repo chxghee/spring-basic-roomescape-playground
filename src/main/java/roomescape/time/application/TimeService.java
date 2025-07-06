@@ -2,10 +2,8 @@ package roomescape.time.application;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.exception.ApplicationException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
-import roomescape.time.exception.TimeException;
 import roomescape.time.presentation.AvailableTime;
 import roomescape.time.domain.Time;
 import roomescape.time.domain.TimeRepository;
@@ -49,12 +47,7 @@ public class TimeService {
 
     @Transactional
     public void deleteById(Long id) {
-        Time time = getTime(id);
+        Time time = timeRepository.getTimeById(id);
         time.delete();
-    }
-
-    private Time getTime(Long id) {
-        return timeRepository.findById(id)
-                .orElseThrow(() -> new ApplicationException(TimeException.TIME_NOT_FOUND));
     }
 }

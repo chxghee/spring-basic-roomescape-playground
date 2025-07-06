@@ -2,10 +2,8 @@ package roomescape.theme.application;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.exception.ApplicationException;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeRepository;
-import roomescape.theme.exception.ThemeException;
 
 import java.util.List;
 
@@ -30,14 +28,7 @@ public class ThemeService {
 
     @Transactional
     public void deleteById(Long id) {
-        Theme theme = getTheme(id);
+        Theme theme = themeRepository.getThemeById(id);
         theme.delete();
     }
-
-    private Theme getTheme(Long id) {
-        return themeRepository.findById(id)
-                .orElseThrow(() -> new ApplicationException(ThemeException.THEME_NOT_FOUND));
-    }
-
-
 }
