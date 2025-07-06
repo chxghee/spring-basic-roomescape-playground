@@ -39,7 +39,8 @@ public class MemberService {
     }
 
     public LoginMemberResponse checkLogin(LoginMember loginMember) {
-        return new LoginMemberResponse(getMember(loginMember.id()).getName());
+        Member member = getMember(loginMember.id());
+        return new LoginMemberResponse(member.getName());
     }
 
     private Member getMember(Long memberId) {

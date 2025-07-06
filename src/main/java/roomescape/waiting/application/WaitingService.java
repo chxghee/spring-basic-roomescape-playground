@@ -32,7 +32,6 @@ public class WaitingService {
     private final ThemeRepository themeRepository;
     private final TimeRepository timeRepository;
 
-
     public WaitingService(WaitingRepository waitingRepository, ReservationRepository reservationRepository,
                           MemberRepository memberRepository, ThemeRepository themeRepository, TimeRepository timeRepository) {
         this.waitingRepository = waitingRepository;
@@ -80,12 +79,11 @@ public class WaitingService {
                 .orElseThrow(() -> new ApplicationException(TimeException.TIME_NOT_FOUND));
     }
 
-
     @Transactional
     public void delete(LoginMember loginMember, Long waitingId) {
         Waiting waiting = getWaiting(waitingId);
 
-        if (!loginMember.id().equals(waiting.getMember().getId())) {
+        if (!waiting.belongsTo(loginMember.id())) {
             throw new ApplicationException(AuthException.FORBIDDEN_ACCESS);
         }
         waitingRepository.delete(waiting);

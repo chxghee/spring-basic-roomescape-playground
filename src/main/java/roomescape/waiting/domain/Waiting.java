@@ -35,6 +35,10 @@ public class Waiting {
         this.theme = theme;
     }
 
+    public boolean belongsTo(Long loginMemberId) {
+        return member.getId().equals(loginMemberId);
+    }
+
     public Long getId() {
         return id;
     }

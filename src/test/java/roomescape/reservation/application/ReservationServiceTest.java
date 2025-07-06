@@ -56,7 +56,7 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 로그인한_유저의_권한이_ADMIN이라면_요청의_이름으로_예약을_생성해야_한다() {
+    void 로그인한_유저의_권한이_ADMIN이라면_요청에_입력된_이름으로_예약을_생성해야_한다() {
         ReservationRequest request = new ReservationRequest("2024-03-01", "다른유저", theme.getId(), time.getId());
         LoginMember loginMember = new LoginMember(admin.getId());
 
@@ -78,7 +78,7 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 나의_에약_현황을_조회_할_수_있다() {
+    void 나의_예약_현황을_조회_할_수_있다() {
         Theme otherTheme = themeRepository.save(new Theme("테마", "추리테마"));
 
         ReservationRequest firstRequest = new ReservationRequest("2024-03-01", null, theme.getId(), time.getId());
