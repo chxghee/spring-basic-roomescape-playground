@@ -1,12 +1,12 @@
 package roomescape.reservation.application;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.auth.LoginMember;
 import roomescape.exception.ApplicationException;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberRepository;
-import roomescape.member.exception.MemberException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservation.exception.ReservationException;
@@ -40,26 +40,28 @@ public class ReservationService {
         this.timeRepository = timeRepository;
     }
 
-    @Transactional
     public ReservationResponse save(ReservationCommand command) {
         Time time = timeRepository.getTimeById(command.time());
         Theme theme = themeRepository.getThemeById(command.theme());
-        if (reservationRepository.existsByDateAndTimeAndTheme(command.date(), time, theme)) {
-            throw new ApplicationException(ReservationException.DUPLICATE_RESERVATION_REQUEST);
-        }
-
-        Reservation newReservation = createReservation(command, time, theme);
-        reservationRepository.save(newReservation);
-        return ReservationResponse.from(newReservation);
+        Member member = memberRepository.getMemberById(command.memberId());
+        Reservation newReservation = createReservation(command, time, theme, member);
+        return saveReservation(newReservation);
     }
 
-    private Reservation createReservation(ReservationCommand command, Time time, Theme theme) {
-        Member member = memberRepository.getMemberById(command.memberId());
+    @Transactional
+    public ReservationResponse saveReservation(Reservation reservation) {
+        try {
+            reservationRepository.save(reservation);
+            return ReservationResponse.from(reservation);
+        } catch (DataIntegrityViolationException e) {
+            throw new ApplicationException(ReservationException.DUPLICATE_RESERVATION_REQUEST);
+        }
+    }
 
+    private Reservation createReservation(ReservationCommand command, Time time, Theme theme, Member member) {
         if (member.isAdmin()) {
             return new Reservation(command.name(), command.date(), time, theme);
         }
-
         return new Reservation(member, command.date(), time, theme);
     }
 
