@@ -122,7 +122,7 @@ class ReservationServiceTest {
         ReservationCommand command = new ReservationCommand(date, admin.getId(), null, theme.getId(), time.getId());
         reservationService.save(command);
 
-        Waiting waiting = new Waiting(user, date, time, theme);
+        Waiting waiting = new Waiting(user, date, time, theme, 1L);
         waitingRepository.save(waiting);
         LoginMember loginMember = new LoginMember(user.getId());
 

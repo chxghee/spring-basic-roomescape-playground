@@ -1,6 +1,5 @@
 package roomescape.waiting.application;
 
-import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,10 +20,15 @@ import roomescape.theme.domain.ThemeRepository;
 import roomescape.time.domain.Time;
 import roomescape.time.domain.TimeRepository;
 import roomescape.waiting.application.command.WaitingCommand;
+import roomescape.waiting.domain.Waiting;
+import roomescape.waiting.domain.WaitingOrderCounter;
+import roomescape.waiting.domain.WaitingOrderCounterRepository;
+import roomescape.waiting.domain.WaitingRepository;
 import roomescape.waiting.exception.WaitingException;
 import roomescape.waiting.presentation.response.WaitingResponse;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.SoftAssertions.*;
 
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
@@ -33,6 +37,10 @@ class WaitingServiceTest {
 
     @Autowired
     private WaitingService waitingService;
+    @Autowired
+    private WaitingRepository waitingRepository;
+    @Autowired
+    private WaitingOrderCounterRepository waitingOrderCounterRepository;
     @Autowired
     private MemberRepository memberRepository;
     @Autowired
@@ -97,9 +105,43 @@ class WaitingServiceTest {
         WaitingCommand waitingCommand2 = new WaitingCommand(date, heechang.getId(), theme.getId(), time.getId());
         WaitingResponse secondWaiting = waitingService.save(waitingCommand2);
 
-        SoftAssertions.assertSoftly(softly -> {
+        assertSoftly(softly -> {
             assertThat(firstWaiting.waitingNumber()).isEqualTo(1L);
             assertThat(secondWaiting.waitingNumber()).isEqualTo(2L);
+        });
+    }
+
+    @Test
+    void 예약대기_취소시_예약대기_순번이_당겨져야_한다() {
+        WaitingCommand waitingCommand1 = new WaitingCommand(date, member.getId(), theme.getId(), time.getId());
+        WaitingResponse firstWaiting = waitingService.save(waitingCommand1);
+
+        Member heechang = memberRepository.save(new Member("heechang", "xcv@email.com", "1234", Role.USER));
+        WaitingCommand waitingCommand2 = new WaitingCommand(date, heechang.getId(), theme.getId(), time.getId());
+        WaitingResponse secondWaiting = waitingService.save(waitingCommand2);
+
+        Member hee = memberRepository.save(new Member("hee", "cvb@email.com", "1234", Role.USER));
+        WaitingCommand waitingCommand3 = new WaitingCommand(date, hee.getId(), theme.getId(), time.getId());
+        WaitingResponse thirdWaiting = waitingService.save(waitingCommand3);
+
+        // 가장 첫번째 예약 대기 삭제
+        LoginMember loginMember = new LoginMember(member.getId());
+        waitingService.delete(loginMember, firstWaiting.id());
+
+        Waiting heechangsWaitings = waitingRepository.findByMemberId(heechang.getId()).get(0);
+        Waiting heesWaitings = waitingRepository.findByMemberId(hee.getId()).get(0);
+        WaitingOrderCounter counter = waitingOrderCounterRepository.findForUpdate(theme.getId(), date, time.getId()).get();
+
+        assertSoftly(softly -> {
+            // 삭제 이전 상태
+            assertThat(firstWaiting.waitingNumber()).isEqualTo(1L);
+            assertThat(secondWaiting.waitingNumber()).isEqualTo(2L);
+            assertThat(thirdWaiting.waitingNumber()).isEqualTo(3L);
+
+            // 삭제 이후 상태
+            assertThat(heechangsWaitings.getOrder()).isEqualTo(1L);
+            assertThat(heesWaitings.getOrder()).isEqualTo(2L);
+            assertThat(counter.getLastOrder()).isEqualTo(2L);
         });
     }
 }
