@@ -11,6 +11,7 @@ import roomescape.auth.AuthenticatedMember;
 import roomescape.auth.LoginMember;
 import roomescape.reservation.application.ReservationService;
 import roomescape.reservation.presentation.request.ReservationRequest;
+import roomescape.reservation.presentation.response.MyReservationResponse;
 import roomescape.reservation.presentation.response.ReservationResponse;
 
 import java.net.URI;
@@ -41,5 +42,10 @@ public class ReservationController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         reservationService.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/reservations-mine")
+    public ResponseEntity<List<MyReservationResponse>> myReservations(@AuthenticatedMember LoginMember loginMember) {
+        return ResponseEntity.ok(reservationService.findMyReservations(loginMember));
     }
 }

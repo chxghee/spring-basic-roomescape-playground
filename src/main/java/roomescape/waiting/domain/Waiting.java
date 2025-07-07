@@ -1,4 +1,4 @@
-package roomescape.reservation.domain;
+package roomescape.waiting.domain;
 
 import jakarta.persistence.*;
 import roomescape.member.domain.Member;
@@ -6,17 +6,11 @@ import roomescape.theme.domain.Theme;
 import roomescape.time.domain.Time;
 
 @Entity
-@Table(name = "reservation",
-        uniqueConstraints = @UniqueConstraint(
-                columnNames = {"date", "time_id", "theme_id"}
-        )
-)
-public class Reservation {
+@Table(name = "waiting")
+public class Waiting {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private String name;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
@@ -32,30 +26,25 @@ public class Reservation {
     @JoinColumn(name = "theme_id")
     private Theme theme;
 
-    public Reservation(String name, String date, Time time, Theme theme) {
-        this.name = name;
-        this.date = date;
-        this.time = time;
-        this.theme = theme;
-    }
+    @Column(name = "waiting_order")
+    private Long order;
 
-    public Reservation(Member member, String date, Time time, Theme theme) {
-        this.name = member.getName();
+    protected Waiting() {}
+
+    public Waiting(Member member, String date, Time time, Theme theme, Long order) {
         this.member = member;
         this.date = date;
         this.time = time;
         this.theme = theme;
+        this.order = order;
     }
 
-    protected Reservation() {
+    public boolean belongsTo(Long loginMemberId) {
+        return member.getId().equals(loginMemberId);
     }
 
     public Long getId() {
         return id;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public Member getMember() {
@@ -72,5 +61,9 @@ public class Reservation {
 
     public Theme getTheme() {
         return theme;
+    }
+
+    public Long getOrder() {
+        return order;
     }
 }

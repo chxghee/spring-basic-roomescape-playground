@@ -56,7 +56,7 @@ public class MemberController {
 
     @GetMapping("/login/check")
     public ResponseEntity<LoginMemberResponse> checkLogin(HttpServletRequest request, @AuthenticatedMember LoginMember loginMember) {
-        return ResponseEntity.ok(new LoginMemberResponse(loginMember.name()));
+        return ResponseEntity.ok(memberService.checkLogin(loginMember));
     }
 
 }

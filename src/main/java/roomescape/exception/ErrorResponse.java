@@ -6,7 +6,7 @@ public record ErrorResponse(
         String detail,
         String instance
 ) {
-    public static ErrorResponse of(ExceptionCode code, String instance) {
-        return new ErrorResponse(code.getTitle(), code.getHttpStatus().value(), code.getDetail(), instance);
+    public static ErrorResponse of(ExceptionCode code, String instance, String message) {
+        return new ErrorResponse(code.getTitle(), code.getHttpStatus().value(), message, instance);
     }
 }

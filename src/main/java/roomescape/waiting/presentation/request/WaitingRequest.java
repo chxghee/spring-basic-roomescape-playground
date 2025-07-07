@@ -1,23 +1,27 @@
-package roomescape.reservation.presentation.request;
+package roomescape.waiting.presentation.request;
 
 import roomescape.auth.LoginMember;
 import roomescape.exception.ApplicationException;
 import roomescape.reservation.exception.ReservationException;
-import roomescape.reservation.application.ReservationCommand;
+import roomescape.waiting.application.command.WaitingCommand;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public record ReservationRequest(
+public record WaitingRequest(
         String date,
-        String name,
         Long theme,
         Long time
 ) {
 
-    public ReservationCommand toCommand(LoginMember loginMember) {
+    public WaitingCommand toCommand(LoginMember loginMember) {
         validateRequest();
-        return new ReservationCommand(date, loginMember.id(), name, theme, time);
+        return new WaitingCommand(
+                date,
+                loginMember.id(),
+                theme,
+                time
+        );
     }
 
     private void validateRequest() {

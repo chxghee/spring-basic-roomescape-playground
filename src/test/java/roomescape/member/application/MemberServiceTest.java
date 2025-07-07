@@ -10,7 +10,7 @@ import roomescape.exception.ApplicationException;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
 import roomescape.member.exception.MemberException;
-import roomescape.member.infrastructure.MemberDao;
+import roomescape.member.domain.MemberRepository;
 import roomescape.member.presentation.request.LoginRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -24,12 +24,12 @@ class MemberServiceTest {
     @Autowired
     private MemberService memberService;
     @Autowired
-    private MemberDao memberDao;
+    private MemberRepository memberRepository;
     private Member member;
 
     @BeforeEach
     void setUp() {
-        member = memberDao.save(new Member("changhee", "asd@email.com", "1234", Role.USER));
+        member = memberRepository.save(new Member("changhee", "asd@email.com", "1234", Role.USER));
     }
 
     @Test
