@@ -1,40 +1,26 @@
 package roomescape.time.domain;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import roomescape.exception.ApplicationException;
 import roomescape.time.exception.TimeException;
 
 import java.util.List;
 import java.util.Optional;
 
-@Repository
-public class TimeRepository {
+public interface TimeRepository extends JpaRepository<Time, Long> {
 
-    @PersistenceContext
-    private EntityManager entityManager;
+    @Override
+    @Query("select t from Time t where t.deleted = false")
+    List<Time> findAll();
 
-    public Optional<Time> findById(Long id) {
-        return entityManager.createQuery("SELECT t FROM Time t WHERE t.deleted = false and t.id = :id", Time.class)
-                .setParameter("id", id)
-                .getResultList()
-                .stream()
-                .findFirst();
-    }
+    @Override
+    @Query("select t from Time t where t.deleted = false and t.id = :id")
+    Optional<Time> findById(@Param("id") Long id);
 
-    public Time getTimeById(Long id) {
+    default Time getTimeById(Long id) {
         return findById(id)
                 .orElseThrow(() -> new ApplicationException(TimeException.TIME_NOT_FOUND));
-    }
-
-    public List<Time> findAll() {
-        return entityManager.createQuery("select t from Time t where t.deleted = false ", Time.class)
-                .getResultList();
-    }
-
-    public Time save(Time time) {
-        entityManager.persist(time);
-        return time;
     }
 }
