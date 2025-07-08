@@ -67,7 +67,8 @@ public class ReservationService {
 
     @Transactional
     public void deleteById(Long id) {
-        reservationRepository.deleteById(id);
+        Reservation reservation = reservationRepository.getReservationById(id);
+        reservationRepository.delete(reservation);
     }
 
     public List<ReservationResponse> findAll() {
@@ -77,7 +78,7 @@ public class ReservationService {
     }
 
     public List<MyReservationResponse> findMyReservations(LoginMember loginMember) {
-        List<MyReservationResponse> reservationList = reservationRepository.findByMemberId(loginMember.id())
+        List<MyReservationResponse> reservationList = reservationRepository.findByMember_Id(loginMember.id())
                 .stream()
                 .map(MyReservationResponse::from)
                 .toList();
