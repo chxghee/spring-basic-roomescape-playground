@@ -22,8 +22,8 @@ import roomescape.time.domain.TimeRepository;
 import roomescape.waiting.application.command.WaitingCommand;
 import roomescape.waiting.domain.Waiting;
 import roomescape.waiting.domain.WaitingOrderCounter;
-import roomescape.waiting.domain.WaitingOrderCounterRepository;
-import roomescape.waiting.domain.WaitingRepository;
+import roomescape.waiting.domain.repository.WaitingOrderCounterRepository;
+import roomescape.waiting.domain.repository.WaitingRepository;
 import roomescape.waiting.exception.WaitingException;
 import roomescape.waiting.presentation.response.WaitingResponse;
 
@@ -128,9 +128,9 @@ class WaitingServiceTest {
         LoginMember loginMember = new LoginMember(member.getId());
         waitingService.delete(loginMember, firstWaiting.id());
 
-        Waiting heechangsWaitings = waitingRepository.findByMemberId(heechang.getId()).get(0);
-        Waiting heesWaitings = waitingRepository.findByMemberId(hee.getId()).get(0);
-        WaitingOrderCounter counter = waitingOrderCounterRepository.findForUpdate(theme.getId(), date, time.getId()).get();
+        Waiting heechangsWaitings = waitingRepository.findByMember_Id(heechang.getId()).get(0);
+        Waiting heesWaitings = waitingRepository.findByMember_Id(hee.getId()).get(0);
+        WaitingOrderCounter counter = waitingOrderCounterRepository.findByThemeIdAndDateAndTimeIdWithLock(theme.getId(), date, time.getId()).get();
 
         assertSoftly(softly -> {
             // 삭제 이전 상태

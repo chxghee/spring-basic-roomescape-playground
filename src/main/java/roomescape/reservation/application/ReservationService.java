@@ -16,7 +16,7 @@ import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeRepository;
 import roomescape.time.domain.Time;
 import roomescape.time.domain.TimeRepository;
-import roomescape.waiting.domain.WaitingRepository;
+import roomescape.waiting.domain.repository.WaitingRepository;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -83,7 +83,7 @@ public class ReservationService {
                 .map(MyReservationResponse::from)
                 .toList();
 
-        List<MyReservationResponse> waitingList = waitingRepository.findByMemberId(loginMember.id())
+        List<MyReservationResponse> waitingList = waitingRepository.findByMember_Id(loginMember.id())
                 .stream()
                 .map(MyReservationResponse::from)
                 .toList();

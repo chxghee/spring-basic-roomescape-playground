@@ -20,7 +20,7 @@ import roomescape.theme.domain.ThemeRepository;
 import roomescape.time.domain.Time;
 import roomescape.time.domain.TimeRepository;
 import roomescape.waiting.domain.Waiting;
-import roomescape.waiting.domain.WaitingRepository;
+import roomescape.waiting.domain.repository.WaitingRepository;
 
 import java.util.List;
 

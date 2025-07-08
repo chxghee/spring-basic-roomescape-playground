@@ -17,8 +17,8 @@ import roomescape.time.domain.TimeRepository;
 import roomescape.waiting.application.command.WaitingCommand;
 import roomescape.waiting.domain.Waiting;
 import roomescape.waiting.domain.WaitingOrderCounter;
-import roomescape.waiting.domain.WaitingOrderCounterRepository;
-import roomescape.waiting.domain.WaitingRepository;
+import roomescape.waiting.domain.repository.WaitingOrderCounterRepository;
+import roomescape.waiting.domain.repository.WaitingRepository;
 import roomescape.waiting.exception.WaitingException;
 import roomescape.waiting.presentation.response.WaitingResponse;
 
@@ -67,8 +67,8 @@ public class WaitingService {
 
     @Transactional
     public Waiting createWaitingWithLock(WaitingCommand command, Theme theme, Time time, Member member) {
-        // 1. 카운터 테이블에서 해당 예약의 row를 찾아 비관적 락
-        WaitingOrderCounter counter = waitingOrderCounterRepository.findForUpdate(theme.getId(), command.date(), time.getId())
+        // 1. 카운터 테이블에서 해당 예약의 row를 찾아 락
+        WaitingOrderCounter counter = waitingOrderCounterRepository.findByThemeIdAndDateAndTimeIdWithLock(theme.getId(), command.date(), time.getId())
                 .orElseGet(() ->
                         new WaitingOrderCounter(theme.getId(), command.date(), time.getId(), 0L)
                 );
@@ -99,7 +99,7 @@ public class WaitingService {
         }
 
         // 1. 카운터 테이블에서 해당 예약의 row를 찾아 비관적 락
-        WaitingOrderCounter counter = waitingOrderCounterRepository.findForUpdate(
+        WaitingOrderCounter counter = waitingOrderCounterRepository.findByThemeIdAndDateAndTimeIdWithLock(
                         waiting.getTheme().getId(), waiting.getDate(), waiting.getTime().getId())
                 .orElseThrow(() -> new ApplicationException(WaitingException.WAITING_ORDER_COUNTER_NOTFOUND));
 
