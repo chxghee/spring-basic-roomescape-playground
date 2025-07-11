@@ -3,7 +3,7 @@ package roomescape.reservation.presentation.request;
 import roomescape.auth.LoginMember;
 import roomescape.exception.ApplicationException;
 import roomescape.reservation.exception.ReservationException;
-import roomescape.reservation.application.ReservationCommand;
+import roomescape.reservation.application.command.ReservationCommand;
 
 import java.util.ArrayList;
 import java.util.List;

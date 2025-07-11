@@ -11,6 +11,7 @@ import roomescape.exception.ApplicationException;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
 import roomescape.member.domain.MemberRepository;
+import roomescape.reservation.application.command.ReservationCommand;
 import roomescape.reservation.exception.ReservationException;
 import roomescape.reservation.presentation.request.ReservationRequest;
 import roomescape.reservation.presentation.response.MyReservationResponse;

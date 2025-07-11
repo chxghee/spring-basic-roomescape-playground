@@ -1,15 +1,13 @@
 package roomescape.reservation.application;
 
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.auth.LoginMember;
-import roomescape.exception.ApplicationException;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberRepository;
+import roomescape.reservation.application.command.ReservationCommand;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
-import roomescape.reservation.exception.ReservationException;
 import roomescape.reservation.presentation.response.MyReservationResponse;
 import roomescape.reservation.presentation.response.ReservationResponse;
 import roomescape.theme.domain.Theme;
@@ -22,17 +20,19 @@ import java.util.List;
 import java.util.stream.Stream;
 
 @Service
-@Transactional(readOnly = true)
 public class ReservationService {
 
+    private final ReservationSaveService reservationSaveService;
     private final ReservationRepository reservationRepository;
     private final WaitingRepository waitingRepository;
     private final MemberRepository memberRepository;
     private final ThemeRepository themeRepository;
     private final TimeRepository timeRepository;
 
-    public ReservationService(ReservationRepository reservationRepository, WaitingRepository waitingRepository,
-                              MemberRepository memberRepository, ThemeRepository themeRepository, TimeRepository timeRepository) {
+    public ReservationService(ReservationSaveService reservationSaveService, ReservationRepository reservationRepository,
+                              WaitingRepository waitingRepository, MemberRepository memberRepository,
+                              ThemeRepository themeRepository, TimeRepository timeRepository) {
+        this.reservationSaveService = reservationSaveService;
         this.reservationRepository = reservationRepository;
         this.waitingRepository = waitingRepository;
         this.memberRepository = memberRepository;
@@ -45,17 +45,7 @@ public class ReservationService {
         Theme theme = themeRepository.getThemeById(command.theme());
         Member member = memberRepository.getMemberById(command.memberId());
         Reservation newReservation = createReservation(command, time, theme, member);
-        return saveReservation(newReservation);
-    }
-
-    @Transactional
-    public ReservationResponse saveReservation(Reservation reservation) {
-        try {
-            reservationRepository.save(reservation);
-            return ReservationResponse.from(reservation);
-        } catch (DataIntegrityViolationException e) {
-            throw new ApplicationException(ReservationException.DUPLICATE_RESERVATION_REQUEST);
-        }
+        return reservationSaveService.saveReservation(newReservation);
     }
 
     private Reservation createReservation(ReservationCommand command, Time time, Theme theme, Member member) {
@@ -71,6 +61,7 @@ public class ReservationService {
         reservationRepository.delete(reservation);
     }
 
+    @Transactional(readOnly = true)
     public List<ReservationResponse> findAll() {
         return reservationRepository.findAll().stream()
                 .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(), it.getTime().getValue()))

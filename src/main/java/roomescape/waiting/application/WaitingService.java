@@ -1,6 +1,5 @@
 package roomescape.waiting.application;
 
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.auth.AuthException;
@@ -23,7 +22,6 @@ import roomescape.waiting.exception.WaitingException;
 import roomescape.waiting.presentation.response.WaitingResponse;
 
 @Service
-@Transactional(readOnly = true)
 public class WaitingService {
 
     private final WaitingRepository waitingRepository;
@@ -32,15 +30,17 @@ public class WaitingService {
     private final MemberRepository memberRepository;
     private final ThemeRepository themeRepository;
     private final TimeRepository timeRepository;
+    private final WaitingSaveService waitingSaveService;
 
     public WaitingService(WaitingRepository waitingRepository, WaitingOrderCounterRepository waitingOrderCounterRepository,  ReservationRepository reservationRepository,
-                          MemberRepository memberRepository, ThemeRepository themeRepository, TimeRepository timeRepository) {
+                          MemberRepository memberRepository, ThemeRepository themeRepository, TimeRepository timeRepository, WaitingSaveService waitingSaveService) {
         this.waitingRepository = waitingRepository;
         this.waitingOrderCounterRepository = waitingOrderCounterRepository;
         this.reservationRepository = reservationRepository;
         this.memberRepository = memberRepository;
         this.themeRepository = themeRepository;
         this.timeRepository = timeRepository;
+        this.waitingSaveService = waitingSaveService;
     }
 
     public WaitingResponse save(WaitingCommand command) {
@@ -49,35 +49,8 @@ public class WaitingService {
         Member member = memberRepository.getMemberById(command.memberId());
 
         validateDuplicateRequest(command.date(), member, time, theme);
-
-        int maxAttempts = 2;
-        int attempts = 0;
-        // 카운터 생성 충돌시 재시도 로직
-        while (attempts < maxAttempts) {
-            attempts++;
-            try {
-                Waiting newWaiting = createWaitingWithLock(command, theme, time, member);
-                return WaitingResponse.from(newWaiting);
-            } catch (DataIntegrityViolationException e) {
-                if (attempts >= maxAttempts) throw new ApplicationException(WaitingException.RETRY_WAITING_ORDER_COUNTER_FAILED);
-            }
-        }
-        throw new ApplicationException(WaitingException.RETRY_WAITING_ORDER_COUNTER_FAILED);
-    }
-
-    @Transactional
-    public Waiting createWaitingWithLock(WaitingCommand command, Theme theme, Time time, Member member) {
-        // 1. 카운터 테이블에서 해당 예약의 row를 찾아 락
-        WaitingOrderCounter counter = waitingOrderCounterRepository.findByThemeIdAndDateAndTimeIdWithLock(theme.getId(), command.date(), time.getId())
-                .orElseGet(() ->
-                        new WaitingOrderCounter(theme.getId(), command.date(), time.getId(), 0L)
-                );
-
-        // 2. 카운터를 1 증가시키고 저장
-        counter.increaseOrder();
-        waitingOrderCounterRepository.save(counter);
-
-        return waitingRepository.save(new Waiting(member, command.date(), time, theme, counter.getLastOrder()));
+        Waiting newWaiting = waitingSaveService.createWaiting(command, theme, time, member);
+        return WaitingResponse.from(newWaiting);
     }
 
     private void validateDuplicateRequest(String date, Member member, Time time, Theme theme) {
