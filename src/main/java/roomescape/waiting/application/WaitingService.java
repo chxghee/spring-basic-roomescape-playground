@@ -1,5 +1,6 @@
 package roomescape.waiting.application;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.auth.AuthException;
@@ -49,8 +50,23 @@ public class WaitingService {
         Member member = memberRepository.getMemberById(command.memberId());
 
         validateDuplicateRequest(command.date(), member, time, theme);
-        Waiting newWaiting = waitingSaveService.createWaiting(command, theme, time, member);
+        Waiting newWaiting = createWaitingWithRetry(command, theme, time, member);
         return WaitingResponse.from(newWaiting);
+    }
+
+    private Waiting createWaitingWithRetry(WaitingCommand command, Theme theme, Time time, Member member) {
+        int maxAttempts = 2;
+        int attempts = 0;
+        // 카운터 생성 충돌시 재시도 로직
+        while (attempts < maxAttempts) {
+            attempts++;
+            try {
+                return waitingSaveService.createWaitingWithLock(command, theme, time, member);
+            } catch (DataIntegrityViolationException e) {
+                if (attempts >= maxAttempts) throw new ApplicationException(WaitingException.RETRY_WAITING_ORDER_COUNTER_FAILED);
+            }
+        }
+        throw new ApplicationException(WaitingException.RETRY_WAITING_ORDER_COUNTER_FAILED);
     }
 
     private void validateDuplicateRequest(String date, Member member, Time time, Theme theme) {
