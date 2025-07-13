@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.exception.ApplicationException;
 import roomescape.member.domain.Member;
@@ -18,7 +17,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 @Transactional
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 class MemberServiceTest {
 
     @Autowired
