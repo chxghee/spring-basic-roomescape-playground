@@ -1,5 +1,7 @@
 package roomescape.auth;
 
+import jwt.JwtProperties;
+import jwt.JwtTokenProvider;
 import org.junit.jupiter.api.Test;
 import roomescape.exception.ApplicationException;
 import roomescape.member.domain.Member;
