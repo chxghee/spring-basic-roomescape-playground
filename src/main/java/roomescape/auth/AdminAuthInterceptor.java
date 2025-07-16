@@ -38,6 +38,7 @@ public class AdminAuthInterceptor implements HandlerInterceptor {
         Member loginMember = getLoginMemberFromAccessToken(request);
 
         if (loginMember.isAdmin()) {
+            request.setAttribute("loginMember", new LoginMember(loginMember.getId()));
             return true;
         }
         throw new ApplicationException(AuthException.FORBIDDEN_ADMIN_ACCESS);

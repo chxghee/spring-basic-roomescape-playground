@@ -4,13 +4,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.auth.LoginMember;
 import roomescape.exception.ApplicationException;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
 import roomescape.member.domain.MemberRepository;
+import roomescape.reservation.application.command.ReservationCommand;
 import roomescape.reservation.exception.ReservationException;
 import roomescape.reservation.presentation.request.ReservationRequest;
 import roomescape.reservation.presentation.response.MyReservationResponse;
@@ -20,7 +20,7 @@ import roomescape.theme.domain.ThemeRepository;
 import roomescape.time.domain.Time;
 import roomescape.time.domain.TimeRepository;
 import roomescape.waiting.domain.Waiting;
-import roomescape.waiting.domain.WaitingRepository;
+import roomescape.waiting.domain.repository.WaitingRepository;
 
 import java.util.List;
 
@@ -29,7 +29,6 @@ import static org.assertj.core.api.SoftAssertions.*;
 
 @SpringBootTest
 @Transactional
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 class ReservationServiceTest {
 
     @Autowired

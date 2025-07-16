@@ -1,4 +1,4 @@
-package roomescape.reservation.application;
+package roomescape.reservation.application.command;
 
 public record ReservationCommand(
         String date,

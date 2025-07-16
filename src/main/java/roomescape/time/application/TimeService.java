@@ -4,9 +4,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
+import roomescape.time.domain.TimeRepository;
 import roomescape.time.presentation.AvailableTime;
 import roomescape.time.domain.Time;
-import roomescape.time.domain.TimeRepository;
 
 import java.util.List;
 
@@ -14,8 +14,8 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class TimeService {
 
-    private TimeRepository timeRepository;
-    private ReservationRepository reservationRepository;
+    private final TimeRepository timeRepository;
+    private final ReservationRepository reservationRepository;
 
     public TimeService(TimeRepository timeRepository, ReservationRepository reservationRepository) {
         this.timeRepository = timeRepository;
@@ -23,7 +23,7 @@ public class TimeService {
     }
 
     public List<AvailableTime> getAvailableTime(String date, Long themeId) {
-        List<Reservation> reservations = reservationRepository.findByDateAndThemeId(date, themeId);
+        List<Reservation> reservations = reservationRepository.findByDateAndTheme_Id(date, themeId);
         List<Time> times = timeRepository.findAll();
 
         return times.stream()
