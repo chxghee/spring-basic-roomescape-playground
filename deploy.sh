@@ -64,7 +64,7 @@ fi
 
 # 6. 새 애플리케이션 백그라운드 실행
 echo "> 새 애플리케이션 실행" >> $DEPLOY_LOG
-nohup java -jar $JAR_FILE > $APP_LOG 2> $APP_ERROR_LOG &    # 정상 출력 로그-> > APP_LOG / 비정상 출력 로그 -> 2> ERROR_LOG
+nohup java -Dspring.profiles.active=prod -jar $JAR_FILE > $APP_LOG 2> $APP_ERROR_LOG &    # 정상 출력 로그-> > APP_LOG / 비정상 출력 로그 -> 2> ERROR_LOG
 
 # 7. 애플리케이션 실행 여부 체크
 NEW_PID=$(pgrep -f "$APP_NAME")
