@@ -3,7 +3,7 @@
 # 명령 에러 발생 시 종료
 set -e
 
-PROJECT_ROOT="/home/ubuntu/app"
+PROJECT_ROOT="/home/ubuntu/spring-basic-roomescape-playground"
 APP_NAME="spring-basic-roomescape-playground"
 
 APP_LOG="$PROJECT_ROOT/application.log"
@@ -36,7 +36,7 @@ chmod +x ./gradlew
 JAR_FILE=$(ls -t $PROJECT_ROOT/build/libs/*.jar | grep -v "\-plain.jar$" | head -n 1)
 
 # 4. 실행 중인 애플리케이션의 PID
-CURRENT_PID=$(pgrep -f "$APP_NAME")
+CURRENT_PID=$(pgrep -f "$APP_NAME" || true)
 
 # 5. 실행 중인 애플리케이션이 있으면 종료
 echo "> 실행 중인 애플리케이션이 있다면 종료" >> $DEPLOY_LOG
@@ -45,7 +45,21 @@ if [ -z "$CURRENT_PID" ]; then
 else
   echo "  -> 실행 중인 애플리케이션 종료 (PID: $CURRENT_PID)" >> $DEPLOY_LOG
   kill -15 $CURRENT_PID
-  sleep 5
+
+  for _ in {1..10}
+  do
+    if ! ps -p $CURRENT_PID > /dev/null 2>&1; then
+      echo "   → 종료 완료" >> $DEPLOY_LOG
+      break
+    fi
+    sleep 1
+  done
+
+  if ps -p $CURRENT_PID > /dev/null 2>&1; then
+    echo "   → 정상 종료 실패, 강제 종료 시도." >> $DEPLOY_LOG
+    kill -9 $CURRENT_PID
+    sleep 2
+  fi
 fi
 
 # 6. 새 애플리케이션 백그라운드 실행
