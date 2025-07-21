@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberRepository;
 import roomescape.member.domain.Role;
@@ -13,13 +14,10 @@ import roomescape.theme.domain.ThemeRepository;
 import roomescape.time.domain.Time;
 import roomescape.time.domain.TimeRepository;
 import roomescape.waiting.application.command.WaitingCommand;
-import roomescape.waiting.domain.WaitingOrderCounter;
-import roomescape.waiting.domain.repository.WaitingOrderCounterRepository;
 import roomescape.waiting.domain.repository.WaitingRepository;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -28,13 +26,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
+@ActiveProfiles("test")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 class WaitingServiceConcurrencyTest {
 
     @Autowired
     private WaitingRepository waitingRepository;
-    @Autowired
-    private WaitingOrderCounterRepository orderCounterRepository;
     @Autowired
     private MemberRepository memberRepository;
     @Autowired
