@@ -1,4 +1,4 @@
-package roomescape.auth;
+package jwt;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

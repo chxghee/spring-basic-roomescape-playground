@@ -10,6 +10,7 @@ public class CookieUtil {
     public static void setToken(String accessToken, int cookieExpirationSeconds, HttpServletResponse response) {
         Cookie cookie = new Cookie("token", accessToken);
         cookie.setHttpOnly(true);
+        cookie.setSecure(true);
         cookie.setPath("/");
         cookie.setMaxAge(cookieExpirationSeconds);
         response.addCookie(cookie);

@@ -1,14 +1,13 @@
-package roomescape.auth;
+package jwt;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.stereotype.Component;
+import roomescape.auth.AuthException;
 import roomescape.exception.ApplicationException;
 import roomescape.member.domain.Member;
 
 import java.util.Date;
 
-@Component
 public class JwtTokenProvider {
 
     private final String secretKey;

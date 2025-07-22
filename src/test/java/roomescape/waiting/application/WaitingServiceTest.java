@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.auth.AuthException;
 import roomescape.auth.LoginMember;
@@ -32,6 +33,7 @@ import static org.assertj.core.api.SoftAssertions.*;
 
 @SpringBootTest
 @Transactional
+@ActiveProfiles("test")
 class WaitingServiceTest {
 
     @Autowired
